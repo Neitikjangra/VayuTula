@@ -1,2 +1,4 @@
-/** domain/: shared types and Zod schemas (Profile, Forecast, ActionDef, TulaScore, Plan). Filled in R2. */
-export {};
+/** domain/: shared types and Zod schemas. Profile, ActionDef, TulaScore and Plan arrive in R2. */
+export * from './forecast';
+export * from './geo';
+export * from './query';
