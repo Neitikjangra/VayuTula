@@ -1,0 +1,10 @@
+{
+  "app.name": "VayuTula",
+  "app.tagline": "Air balance for your home",
+  "app.description": "A daily, room-by-room smog plan that weighs what your family breathes in, what your home emits, and what it costs.",
+  "home.promise": "A short plan for every smoggy day: what your family breathes in, what your home emits, and what each step costs or saves.",
+  "home.comingSoon": "Setup and today's plan are on the way.",
+  "lang.groupLabel": "Language",
+  "lang.en": "English",
+  "lang.hi": "हिन्दी"
+}
