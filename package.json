@@ -19,7 +19,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "size:check": "node scripts/check-repo-size.mjs"
+    "size:check": "node scripts/check-repo-size.mjs",
+    "bundle:check": "node scripts/check-bundle-size.mjs"
   },
   "dependencies": {
     "next": "^16.4.6",

@@ -61,6 +61,7 @@ npm run dev
 | `npm test` / `npm run test:coverage` | Vitest unit tests (with coverage) |
 | `npm run test:e2e` | Playwright end-to-end test at 360 px width |
 | `npm run size:check` | Fails if tracked files exceed 8 MB |
+| `npm run bundle:check` | After a build, fails if first-load JS exceeds 200 KB gzipped |
 
 ### Tooling
 
