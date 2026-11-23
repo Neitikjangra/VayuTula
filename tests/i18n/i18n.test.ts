@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import en from '@/i18n/en.json';
 import hi from '@/i18n/hi.json';
-import { DEFAULT_LANG, isLang, t } from '@/i18n';
+import { DEFAULT_LANG, format, isLang, localeOf, t } from '@/i18n';
 
 describe('i18n catalogues', () => {
   it('en and hi have exactly the same keys', () => {
@@ -18,7 +18,8 @@ describe('i18n catalogues', () => {
 
   it('Hindi strings that are not language names use Devanagari', () => {
     const devanagari = /[ऀ-ॿ]/;
-    const translated = Object.entries(hi).filter(([key]) => key !== 'lang.en');
+    const languageNeutral = new Set(['lang.en', 'forecast.dayRange']);
+    const translated = Object.entries(hi).filter(([key]) => !languageNeutral.has(key));
     for (const [, value] of translated) {
       expect(value).toMatch(devanagari);
     }
@@ -33,6 +34,31 @@ describe('t()', () => {
 
   it('defaults to English', () => {
     expect(DEFAULT_LANG).toBe('en');
+  });
+});
+
+describe('format()', () => {
+  it('fills placeholders in both languages', () => {
+    expect(format('en', 'forecast.for', { place: 'Noida' })).toBe('Forecast for Noida');
+    expect(format('hi', 'forecast.for', { place: 'नोएडा' })).toBe('नोएडा का पूर्वानुमान');
+  });
+
+  it('leaves unknown placeholders untouched', () => {
+    expect(format('en', 'forecast.for', {})).toBe('Forecast for {place}');
+  });
+
+  it('uses the same placeholders in en and hi for every key', () => {
+    const names = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
+    for (const key of Object.keys(en) as (keyof typeof en)[]) {
+      expect(names(hi[key])).toEqual(names(en[key]));
+    }
+  });
+});
+
+describe('localeOf()', () => {
+  it('maps languages to Indian locales', () => {
+    expect(localeOf('en')).toBe('en-IN');
+    expect(localeOf('hi')).toBe('hi-IN');
   });
 });
 

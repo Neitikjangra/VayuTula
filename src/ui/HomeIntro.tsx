@@ -1,10 +1,11 @@
 'use client';
 
 import { t } from '@/i18n';
+import { ForecastPanel } from './ForecastPanel';
 import { LanguageToggle } from './LanguageToggle';
 import { useLang } from './useLang';
 
-/** Home page hero: product name, one-line promise and the language switch. */
+/** Home page: product name, one-line promise, language switch and the forecast panel. */
 export function HomeIntro() {
   const lang = useLang();
   return (
@@ -16,10 +17,8 @@ export function HomeIntro() {
         </div>
         <LanguageToggle />
       </header>
-      <section aria-live="polite" className="flex flex-col gap-3">
-        <p className="text-lg leading-relaxed text-slate-900">{t(lang, 'home.promise')}</p>
-        <p className="text-base text-slate-700">{t(lang, 'home.comingSoon')}</p>
-      </section>
+      <p className="text-lg leading-relaxed text-slate-900">{t(lang, 'home.promise')}</p>
+      <ForecastPanel />
     </main>
   );
 }
