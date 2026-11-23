@@ -56,6 +56,14 @@ const config = [
       'max-lines': ['error', { max: 250, skipBlankLines: true, skipComments: true }],
       'max-lines-per-function': ['error', { max: 40, skipBlankLines: true, skipComments: true }],
       'no-console': ['error', { allow: ['warn', 'error'] }],
+      'no-restricted-properties': [
+        'error',
+        {
+          property: 'statusText',
+          message:
+            'statusText is empty over HTTP/2 (Node 26 on Vercel). Use response.ok and response.status.',
+        },
+      ],
     },
   },
   {
