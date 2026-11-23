@@ -57,10 +57,16 @@ npm run dev
 | `npm run dev` | Start the dev server |
 | `npm run build` / `npm start` | Production build and serve |
 | `npm run lint` | ESLint, including layer-boundary and string-literal rules |
-| `npm run typecheck` | Strict type-check with TypeScript 7 (TypeScript 6 stays installed only as the library API that ESLint and Next.js load) |
+| `npm run typecheck` | `tsc --noEmit` (strict) |
 | `npm test` / `npm run test:coverage` | Vitest unit tests (with coverage) |
 | `npm run test:e2e` | Playwright end-to-end test at 360 px width |
 | `npm run size:check` | Fails if tracked files exceed 8 MB |
+
+### Tooling
+
+- Node 26 (`.nvmrc`, `engines`, CI).
+- TypeScript stays on 6.0.x until typescript-eslint supports TypeScript 7.
+- ESLint stays on 9.x until all of Next's ESLint plugins (import, jsx-a11y, react) support ESLint 10.
 
 ### Testing
 
