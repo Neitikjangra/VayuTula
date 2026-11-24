@@ -2,7 +2,9 @@
 
 > A daily, room-by-room smog plan that weighs what your family **breathes in**, what your home **emits out**, and what each step costs or saves in **₹**.
 
-_Status: Round R3 (AI intake). Live at <https://vayutula.vercel.app>. Sections below are filled in as each round lands._
+**Live:** <https://vayutula.vercel.app> · English and हिन्दी · works on a 360 px phone.
+
+Families in smog-hit Indian cities describe their home once (in their own words or a form). Every day VayuTula gives a short, room-by-room plan. Each step is weighed on three pans: how much less the family **breathes in**, how much less the home **emits**, and what it **saves or costs in ₹**. Free steps always come first, and every number is computed by tested code, never by the AI.
 
 ## 1. Chosen vertical
 
@@ -10,9 +12,19 @@ _Status: Round R3 (AI intake). Live at <https://vayutula.vercel.app>. Sections b
 
 ## 2. Brief-to-feature table
 
-| Brief clause | Feature | File | Test |
+Every clause of the Challenge 6 brief maps to a feature, the code that implements it and the test that proves it.
+
+| Brief clause | Feature (requirement) | File | Test |
 | --- | --- | --- | --- |
-| _To be completed in R4._ | | | |
+| GenAI-powered assistant | Conversational setup (FR-1): Gemini extracts a home profile from English or Hindi text and asks one question at a time | `src/ai/intake.ts`, `src/ai/prompts/intake.ts`, `src/app/api/intake/route.ts` | `tests/ai/intake.test.ts`, `tests/api/intake.test.ts`, `tests/e2e/intake.spec.ts` |
+| GenAI-powered assistant | Daily plan (FR-6): Gemini picks 3–5 of the engine's top 8 and writes one reason each, every number checked | `src/ai/plan.ts`, `src/ai/validators.ts`, `src/app/api/plan/route.ts` | `tests/ai/plan.test.ts`, `tests/api/plan.test.ts` |
+| Families and communities | Household with members, ages and sensitivity; breathe-in per person; double weight for children, elders and sensitive members | `src/domain/profile.ts`, `src/engine/rank.ts` | `tests/engine/rank.test.ts` |
+| Low-emission daily routines | Commute and cooking actions with emit-out and ₹ pans (FR-4, FR-5, FR-13) | `src/config/actions.json`, `src/engine/emissions.ts`, `src/engine/cost.ts` | `tests/engine/tula.test.ts` |
+| Indoor air quality hacks | Hourly indoor model per room (FR-3); purifier, airing, kitchen door, incense and coil actions; purifier nudge (FR-16) | `src/engine/indoor.ts`, `src/engine/sources.ts`, `src/engine/nudge.ts`, `src/ui/plan/NudgeBanner.tsx` | `tests/engine/indoor.test.ts`, `tests/engine/nudge.test.ts`, `tests/ui/PlanSection.test.tsx` |
+| Sustainable alternatives | Induction, LPG instead of biomass, vaporiser instead of coils, metro or bus instead of the car | `src/config/actions.json`, `src/engine/scenario.ts` | `tests/engine/tula.test.ts` (LPG → induction golden case) |
+| Tailored to location | City search or browser location; 4-day hourly PM2.5 forecast with source and time (FR-2) | `src/data/openMeteo.ts`, `src/app/api/forecast/route.ts`, `src/ui/ForecastPanel.tsx` | `tests/data/openMeteo.test.ts`, `tests/api/routes.test.ts`, `tests/e2e/forecast.spec.ts` |
+| Tailored to lifestyle | Rooms, windows, purifier, cooking, smoke sources, commute and budget drive applicability, budget filter and time windows | `src/engine/applicability.ts`, `src/engine/plan.ts` | `tests/engine/rank.test.ts`, `tests/engine/plan.test.ts` |
+| Clearly explain the direct impact of choices | Tula scale on every action (FR-5, FR-13), free-first ranking (FR-14), why panel with inputs, formula, assumptions and confidence (FR-7) | `src/ui/plan/TulaScale.tsx`, `src/ui/plan/WhyPanel.tsx`, `src/engine/display.ts` | `tests/engine/tula.test.ts`, property test in `tests/engine/rank.test.ts`, `tests/ui/PlanSection.test.tsx`, `tests/e2e/setup.spec.ts` |
 
 ## 3. Approach and logic
 
@@ -58,20 +70,30 @@ Principle: **numbers from code, words from the model.** Gemini (Flash-class, via
 
 | Guardrail | How | Code | Test |
 | --- | --- | --- | --- |
-| Structured output | JSON-schema response, then a Zod schema and checks in `ai/validators.ts`; one retry with the errors, then the fallback (setup: the manual form) | `ai/intake.ts`, `ai/validators.ts` | `tests/ai/intake.test.ts`, `tests/ai/validators.test.ts` |
+| Structured output | JSON-schema response, then a Zod schema and checks in `ai/validators.ts`; one retry with the errors, then the fallback (setup: the manual form; plan: the template plan) | `ai/intake.ts`, `ai/plan.ts`, `ai/validators.ts` | `tests/ai/intake.test.ts`, `tests/ai/plan.test.ts`, `tests/ai/validators.test.ts` |
+| Number check | Every number in a plan reason must equal one of that action's displayed engine values (or its time window, or 24 h); "about ₹2,000" for ₹2,065 is rejected | `ai/numbers.ts`, `ai/validators.ts` | `tests/ai/numbers.test.ts`, `tests/ai/plan.test.ts` |
+| Action and free-first check | Plan items must come from the engine's top 8, appear once, and never put a paid action before a free one | `ai/validators.ts` | `tests/ai/plan.test.ts` |
+| Minimum data to the AI | The plan request carries a profile hash, counts and engine numbers only: no names, no location | `engine/plan.ts`, `ui/plan/planData.ts` | `tests/engine/plan.test.ts`, `tests/ui/PlanSection.test.tsx` |
 | AI never computes | The model copies stated numbers (e.g. "110 sq ft" → `areaValue: 110, areaUnit: "sqft"`); unit conversion, default sizes, purifier matching and occupancy hours are code with config values | `engine/intakeMerge.ts` | `tests/engine/intakeMerge.test.ts` |
 | Injection safety | Fixed server-side system prompt; user text wrapped in `<user_text>` with `<` and `>` neutralised so it cannot close the wrapper; the model is told text inside is data | `ai/prompts/intake.ts` | "ignore previous instructions" cases |
 | Health | No diagnosis, medicine or dosage in AI text (blocklist, English and Hindi); a symptom mention shows the fixed consult-a-doctor sentence from `health-library.json` | `ai/health.ts` | `tests/ai/health.test.ts` |
 | Topic control | The next question must be about a topic still missing; code picks the topic and stops after 6 questions | `ai/intake.ts` | cap and topic tests |
-| Cost and abuse | Temperature 0.2, output-token cap, minimal thinking, 8 s timeout per model call, 20 AI requests per minute per IP | `ai/client.ts`, `lib/rateLimit.ts` | `tests/ai/client.test.ts`, `tests/api/intake.test.ts` |
+| Cost and abuse | Temperature 0.2, output-token cap, low thinking, 8 s timeout per model call, 20 AI requests per minute per IP, one model call per plan (cached per profile hash and forecast hour on the server and the device) | `ai/client.ts`, `lib/rateLimit.ts`, `app/api/plan/route.ts` | `tests/ai/client.test.ts`, `tests/api/intake.test.ts`, `tests/api/plan.test.ts` |
 | Resilience | If the main model is over quota or overloaded (HTTP 429/503/404), the client tries `GEMINI_FALLBACK_MODEL` (default `gemini-3.5-flash-lite`); if that fails too, the app keeps working with the manual form | `ai/client.ts` | fallback-model tests |
-| Transparency | AI-written questions carry an "AI-written" label; built-in questions do not | `ui/setup/ChatLog.tsx` | `tests/ui/intake.test.tsx` |
+| Transparency | AI-written questions and reasons carry an "AI-written" label; built-in ones do not; every number shows "Estimate" and, while unverified, "Provisional" | `ui/setup/ChatLog.tsx`, `ui/plan/PlanItemCard.tsx` | `tests/ui/intake.test.tsx`, `tests/ui/PlanSection.test.tsx` |
 
-Prompts are versioned constants (`INTAKE_PROMPT_VERSION = "intake-v1"`) with English and Hindi worked examples.
+Prompts are versioned constants (`intake-v1`, `plan-v2`) with worked examples. Live checks during the build found and fixed three issues, each now covered by a test: text with no words made the model invent a family (now answered without the model), `gemini-3.8-flash` rejects the `MINIMAL` thinking level (now `LOW`, with a retry without thinking), and Hindi reasons wrote times as "19: से 20:" (now rejected).
 
 ## 4. How it works
 
-_User journey with screenshots — R4 and R7._
+1. **Choose your city** (search or browser location). The forecast panel shows 4 days of hourly outdoor PM2.5 from Open-Meteo, with its source and fetch time. Only the location rounded to 2 decimals leaves the phone.
+2. **Describe your home** at `/setup`, in English or Hindi: "We are four in a 2BHK, my mother coughs at night, Philips purifier in our room…". Gemini extracts facts; code converts units, matches the purifier model and works out who is in which room when. A live summary fills in; "Use the form instead" is always one tap away, and the form opens automatically if the AI is unavailable.
+3. **Today's plan** on the home page: 3–5 steps, free first, each with a time window ("When: 22:00–07:00"), a one-line reason (labelled when AI-written) and the Tula scale: breathe in, emit out, ₹.
+4. **Why this step?** opens the inputs used (outdoor average, home, budget), the formula in plain words, every config value with its source or "Provisional", and the confidence level.
+5. **Purifier nudge:** during the planned hours a banner says "Switch on the purifier now in Master bedroom"; "Done, it's on" logs the hours and the banner counts this week's purifier hours. Browser notifications are optional.
+6. **Delete my data** clears everything VayuTula stored on the device. There are no accounts and no database.
+
+Screenshots of each step are added with the final polish (R7).
 
 ## 5. Assumptions
 
@@ -337,11 +359,19 @@ npm run dev
 
 ### Testing
 
-_Details in R4._
+| Layer | What is tested | Where |
+| --- | --- | --- |
+| Engine | Steady state, purifier and airing effects, out-of-range inputs, hand-calculated Tula values, ₹ equal to config, 1,000-home free-first property test, 48 h × 6 rooms under 50 ms, time windows, nudge slots and weekly hours | `tests/engine/` (line coverage above 99%) |
+| AI | Validators, number extraction, health and symptom checks, English, Hindi, nonsense and "ignore previous instructions" inputs, retry then fallback, model fallback, thinking-level retry | `tests/ai/` (100% line coverage on `ai/`) |
+| API routes | Input validation, body limits, rate limits, provider failures, plan cache, no user data in logs | `tests/api/` |
+| UI | Forecast, chat setup, form, today's plan, why panel, nudge, delete my data, English and Hindi | `tests/ui/` (jsdom) |
+| End to end | 360 px phone: forecast search, chat setup in Hindi, form setup → plan → why panel, axe WCAG 2.1 AA checks on home (with an open why panel), setup (chat and form) and the Hindi home | `tests/e2e/` (Playwright + `@axe-core/playwright`) |
+
+External services are always mocked in tests: no test calls Open-Meteo or Gemini. CI runs lint, format check, typecheck, unit tests with coverage thresholds, build, first-load JS budget, dependency audit, Playwright and the repo-size check on every push.
 
 ### Deployment
 
-_Vercel — R0 checkpoint._
+Vercel, from `main`. Set `GEMINI_API_KEY` (and optionally `GEMINI_MODEL`, `GEMINI_FALLBACK_MODEL`) as environment variables; Node 26 comes from `engines` in `package.json`. Without a key the app still works: setup uses the form and plans use built-in reasons.
 
 ### Security
 
@@ -354,9 +384,22 @@ _Vercel — R0 checkpoint._
 
 ### Accessibility
 
-- English / Hindi toggle sets `<html lang>`; every UI string comes from `src/i18n/`.
-- Visible focus outline; 44 px minimum touch targets on controls.
+- English / Hindi toggle sets `<html lang>`; every UI string comes from `src/i18n/` (a lint rule blocks hard-coded text in components).
+- Visible focus outline; 44 px minimum touch targets; every input has a label; the why panel is a button with `aria-expanded`.
+- Every value is shown as text, never by colour alone; plan, forecast and chat updates are announced with `aria-live`.
+- Works at 360 px with no sideways scrolling (tested); axe finds no WCAG 2.1 A or AA violations on the tested pages.
 
 ## 7. Business model and roadmap
 
-_R7._
+**Free for families.** Demand for protection is very price-sensitive, so families pay nothing. Revenue would come from those who gain when families follow the plan; none of this is validated yet.
+
+| Payer | What they get | Status |
+| --- | --- | --- |
+| Families | Everything, free | Decided |
+| Housing societies / RWAs | Society pack (combined plans, collective actions, group orders) | To validate with 2–3 RWAs |
+| Purifier and filter brands | Paid per actively used household (usage nudges, filter-change timing); never paid ranking, and any partner link labelled | Hypothesis |
+| Insurers / employers | Wellness programme | Untested |
+
+**Before charging anyone:** a commercial air-data licence (Open-Meteo's free API is non-commercial), a lawyer-reviewed privacy policy and "not medical advice" notice, every config value verified against a primary source, and a week-long trial with 5 families.
+
+**Roadmap:** what-if questions, a plan diff when the forecast changes, a WhatsApp share and society pack, a home-air explainer and an "is my purifier enough?" check (the PRD's Should list), then indoor-monitor calibration and a weekly chart.
