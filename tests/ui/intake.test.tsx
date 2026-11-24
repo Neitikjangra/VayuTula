@@ -152,6 +152,8 @@ describe('chat setup (FR-1)', () => {
     render(<SetupScreen />);
     await say('We are four, my mother coughs at night');
     expect(screen.getByText(/^You mentioned 3 more people. Who are they?/)).toBeTruthy();
+    // Found live: the summary hid Mother until the whole family was described.
+    expect(screen.getByText('People: Mother (Elder (60+))')).toBeTruthy();
   });
 
   it('uses the singular when one more person is to be described', async () => {

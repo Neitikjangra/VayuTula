@@ -59,13 +59,15 @@ interface Props {
   answered: IntakeField[];
   /** True once the chat has heard about any room, even if the list is not complete yet. */
   roomsKnown: boolean;
+  /** True once the chat has heard about anyone, even if more people are still to come. */
+  peopleKnown: boolean;
   onEdit: () => void;
 }
 
 /** Live summary of what the conversation has filled in so far; every field is editable in the form. */
-export function ProfileSummary({ lang, draft, answered, roomsKnown, onEdit }: Props) {
+export function ProfileSummary({ lang, draft, answered, roomsKnown, peopleKnown, onEdit }: Props) {
   const lines = [
-    ...(answered.includes('members') ? [peopleLine(lang, draft)] : []),
+    ...(peopleKnown || answered.includes('members') ? [peopleLine(lang, draft)] : []),
     ...(roomsKnown || answered.some((f) => ['rooms', 'purifier', 'windows'].includes(f))
       ? [roomsLine(lang, draft)]
       : []),
