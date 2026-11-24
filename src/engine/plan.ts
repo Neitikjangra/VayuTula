@@ -78,6 +78,17 @@ export function timeWindowFor(
   }
 }
 
+/** Keeps the best-ranked action of each choice group (bus vs metro, skip vs one incense stick). */
+export function onePerGroup(ranked: RankedAction[]): RankedAction[] {
+  const seen = new Set<string>();
+  return ranked.filter(({ action }) => {
+    if (!action.group) return true;
+    if (seen.has(action.group)) return false;
+    seen.add(action.group);
+    return true;
+  });
+}
+
 /** The engine's top 8, with displayed numbers and time windows, for the plan writer (no names). */
 export function planCandidates(
   profile: Profile,
@@ -86,17 +97,19 @@ export function planCandidates(
   titleOf: (actionId: string) => string,
   cfg: AppConfig,
 ): PlanCandidate[] {
-  return ranked.slice(0, PLAN_CANDIDATES).map(({ action, tula }) => {
-    const d = displayTula(tula);
-    return {
-      actionId: action.id,
-      title: titleOf(action.id),
-      costTier: action.costTier,
-      numbers: { inhaledTotal: d.inhaledTotal, pmG: d.pmG, co2Kg: d.co2Kg, rupees: d.rupees },
-      confidence: d.confidence,
-      timeWindow: timeWindowFor(profile, action, timeline, cfg),
-    };
-  });
+  return onePerGroup(ranked)
+    .slice(0, PLAN_CANDIDATES)
+    .map(({ action, tula }) => {
+      const d = displayTula(tula);
+      return {
+        actionId: action.id,
+        title: titleOf(action.id),
+        costTier: action.costTier,
+        numbers: { inhaledTotal: d.inhaledTotal, pmG: d.pmG, co2Kg: d.co2Kg, rupees: d.rupees },
+        confidence: d.confidence,
+        timeWindow: timeWindowFor(profile, action, timeline, cfg),
+      };
+    });
 }
 
 /** Counts only: what the AI may know about the household. */

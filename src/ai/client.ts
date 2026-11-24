@@ -59,6 +59,25 @@ export function modelsToTry(): string[] {
   return [...new Set([main, fallback])];
 }
 
+/** A model that was over quota, overloaded or too slow is skipped for this long. */
+export const MODEL_COOL_DOWN_MS = 60_000;
+const coolingUntil = new Map<string, number>();
+
+/** Models worth calling now, in preference order (per server instance). */
+function healthyModels(): string[] {
+  const now = Date.now();
+  return modelsToTry().filter((model) => (coolingUntil.get(model) ?? 0) <= now);
+}
+
+function coolDown(model: string): void {
+  coolingUntil.set(model, Date.now() + MODEL_COOL_DOWN_MS);
+}
+
+/** Test helper: forget which models were cooling down. */
+export function resetModelHealth(): void {
+  coolingUntil.clear();
+}
+
 /** Maps SDK failures to typed errors; a rejected thinking setting is reported separately. */
 function toAiError(error: unknown, signal: AbortSignal): AiError {
   if (error instanceof AiError) return error;
@@ -108,13 +127,16 @@ async function askModel(model: string, request: JsonRequest): Promise<string | u
 
 /** Raw text from the first model that answers; quota or overload moves on to the next model. */
 async function firstAnswer(request: JsonRequest): Promise<string | undefined> {
+  if (!process.env.GEMINI_API_KEY) throw new AiError('no_key');
   let last: AiError = new AiError('unavailable');
-  for (const model of modelsToTry()) {
+  for (const model of healthyModels()) {
     try {
       return await askModel(model, request);
     } catch (error) {
-      if (!(error instanceof AiError) || error.kind !== 'unavailable') throw error;
-      last = error;
+      const busy = error instanceof AiError && ['unavailable', 'timeout'].includes(error.kind);
+      if (!busy) throw error;
+      coolDown(model);
+      last = new AiError('unavailable');
     }
   }
   throw last;

@@ -3,6 +3,7 @@
 import { configRegistry } from '@/config';
 import { isProvisional, type PlanCandidate } from '@/domain';
 import type { RankedAction } from '@/engine/rank';
+import { configLabel } from './configLabel';
 import { format, t, type Lang } from '@/i18n';
 import { formatNumber } from '../format';
 import type { PlanData } from './planData';
@@ -17,6 +18,22 @@ function show(value: number | number[], lang: Lang): string {
   return Array.isArray(value) ? value.join(', ') : formatNumber(value, lang);
 }
 
+/** The source as a link showing its site, or "source not yet verified". */
+function SourceLink({ lang, source }: { lang: Lang; source: string }) {
+  if (!/^https?:\/\//.test(source)) {
+    return (
+      <span className="text-slate-700">
+        {source === 'TODO' ? t(lang, 'why.sourceTodo') : source}
+      </span>
+    );
+  }
+  return (
+    <a href={source} target="_blank" rel="noopener noreferrer" className="text-sky-900 underline">
+      {new URL(source).hostname.replace(/^www\./, '')}
+    </a>
+  );
+}
+
 /** Every config value the numbers depend on, with its source or "provisional" (FR-7). */
 function Assumptions({ lang, keys }: { lang: Lang; keys: string[] }) {
   return (
@@ -27,17 +44,15 @@ function Assumptions({ lang, keys }: { lang: Lang; keys: string[] }) {
         const status = isProvisional(entry)
           ? t(lang, 'tula.provisional')
           : format(lang, 'why.verified', { date: entry.verifiedOn ?? '' });
-        const source = entry.source === 'TODO' ? t(lang, 'why.sourceTodo') : entry.source;
-        const line = format(lang, 'why.value', {
-          key,
+        const line = format(lang, 'why.valueOnly', {
+          label: configLabel(lang, key),
           value: show(entry.value, lang),
-          unit: entry.unit,
-          source,
-          status,
         });
         return (
-          <li key={key} className="break-words">
-            {line}
+          <li key={key} title={key} className="flex flex-wrap gap-x-2 break-words">
+            <span>{line}</span>
+            <SourceLink lang={lang} source={entry.source} />
+            <strong>{status}</strong>
           </li>
         );
       })}

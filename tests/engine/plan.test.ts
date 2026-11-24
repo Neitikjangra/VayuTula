@@ -92,9 +92,24 @@ describe('planCandidates()', () => {
   const ranked = rankActions(profile, constantForecast(150), START_ISO);
   const candidates = planCandidates(profile, ranked, t, (id) => `Title ${id}`, appConfig);
 
-  it('sends at most the top 8, in ranked (free-first) order', () => {
+  it('sends at most 8, in ranked (free-first) order', () => {
     expect(candidates.length).toBeLessThanOrEqual(8);
-    expect(candidates.map((c) => c.actionId)).toEqual(ranked.slice(0, 8).map((r) => r.action.id));
+    const order = ranked.map((r) => r.action.id);
+    const positions = candidates.map((c) => order.indexOf(c.actionId));
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+  });
+
+  it('keeps one step per choice group (no bus and metro in the same plan, found live)', () => {
+    const groups = candidates
+      .map((c) => appConfig.actions.find((a) => a.id === c.actionId)?.group)
+      .filter((g): g is string => g !== undefined);
+    expect(new Set(groups).size).toBe(groups.length);
+    const ids = candidates.map((c) => c.actionId);
+    expect(
+      ids.filter((id) => ['bus-instead-of-car', 'metro-instead-of-car', 'carpool'].includes(id))
+        .length,
+    ).toBeLessThanOrEqual(1);
+    expect(ids.filter((id) => id.includes('incense')).length).toBeLessThanOrEqual(1);
   });
 
   it('carries the numbers exactly as displayed, and no names', () => {

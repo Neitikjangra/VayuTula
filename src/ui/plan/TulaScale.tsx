@@ -13,7 +13,7 @@ function direction(value: number): Direction {
 }
 
 /** "x less" / "x more" / "no change" for an avoided amount (positive = improvement). */
-function changeText(
+export function changeText(
   lang: Lang,
   base: 'tula.inhaled' | 'tula.pm' | 'tula.co2',
   value: number,
@@ -22,7 +22,7 @@ function changeText(
   return format(lang, key, { value: formatNumber(Math.abs(value), lang) });
 }
 
-function rupeeText(lang: Lang, rupees: number): string {
+export function rupeeText(lang: Lang, rupees: number): string {
   if (rupees === 0) return t(lang, 'tula.rupeesSame');
   return format(lang, rupees > 0 ? 'tula.saves' : 'tula.costs', {
     value: formatNumber(Math.abs(rupees), lang),

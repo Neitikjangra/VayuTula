@@ -151,8 +151,23 @@ describe('runIntake() with a mocked model (FR-1)', () => {
     const { generate } = model({ ...englishReply, nextField: 'members' });
     const result = await runIntake(request({ answered: [] }), generate);
     // The validator allows "members" (still missing before this turn) but the delta answers it.
-    expect(result.ok && result.value.nextField).toBe('purifier');
+    // Only two bedrooms were named, so rooms are still incomplete: ask about them next.
+    expect(result.ok && result.value.nextField).toBe('rooms');
     expect(result.ok && result.value.question).toBeNull();
+  });
+
+  it('counts rooms as answered once there is a place to sleep and a living room or kitchen', async () => {
+    const complete = {
+      ...englishReply,
+      profileDelta: {
+        ...englishReply.profileDelta,
+        rooms: [...englishReply.profileDelta.rooms, { name: 'Kitchen', kind: 'kitchen' }],
+      },
+      nextField: 'members',
+    };
+    const { generate } = model(complete);
+    const result = await runIntake(request(), generate);
+    expect(result.ok && result.value.nextField).toBe('purifier');
   });
 
   it('stops after 6 questions', async () => {

@@ -32,7 +32,9 @@ test('setup with the form, then today’s plan and its why panel (R4)', async ({
   await plan.getByRole('button', { name: 'Why this step?' }).first().click();
   await expect(plan.getByText('What we used')).toBeVisible();
   await expect(plan.getByText('Values used')).toBeVisible();
-  await expect(plan.getByText(/source not yet verified · Provisional/).first()).toBeVisible();
+  await expect(plan.getByTitle('factors.deposition').first()).toContainText(
+    'Particles settling indoors (per hour)',
+  );
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - window.innerWidth,

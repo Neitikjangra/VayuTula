@@ -104,12 +104,22 @@ export function missingFields(answered: readonly IntakeField[]): IntakeField[] {
   return INTAKE_FIELDS.filter((f) => !answered.includes(f));
 }
 
+/**
+ * Rooms are only "answered" once the list has somewhere to sleep and a living room or kitchen;
+ * otherwise the chat asks about the other rooms (found live: one room ended the topic).
+ */
+function roomsComplete(rooms: RoomFact[]): boolean {
+  const sleep = rooms.some((r) => r.kind === 'bedroom' || r.kind === 'other');
+  const day = rooms.some((r) => r.kind === 'living' || r.kind === 'kitchen');
+  return sleep && day;
+}
+
 /** Topics a set of facts covers. */
 export function fieldsIn(facts: IntakeFacts): IntakeField[] {
   const rooms = facts.rooms ?? [];
   const covered: Record<IntakeField, boolean> = {
     members: facts.members !== undefined,
-    rooms: facts.rooms !== undefined,
+    rooms: roomsComplete(rooms),
     purifier: rooms.some((r) => r.hasPurifier !== undefined || r.purifierModel !== undefined),
     windows: rooms.some((r) => r.windowType !== undefined),
     cooking: facts.cooking !== undefined,

@@ -3,6 +3,7 @@
     {
       "id": "run-purifier-when-occupied",
       "category": "indoor",
+      "group": "purifier-run",
       "costTier": 0,
       "oneOffRupees": {
         "value": 0,
@@ -29,6 +30,7 @@
     {
       "id": "run-purifier-bedroom-sleep",
       "category": "indoor",
+      "group": "purifier-run",
       "costTier": 0,
       "oneOffRupees": {
         "value": 0,
@@ -170,6 +172,7 @@
     {
       "id": "skip-incense",
       "category": "indoor",
+      "group": "incense",
       "costTier": 0,
       "oneOffRupees": {
         "value": 0,
@@ -197,6 +200,7 @@
     {
       "id": "one-incense-stick",
       "category": "indoor",
+      "group": "incense",
       "costTier": 0,
       "oneOffRupees": {
         "value": 0,
@@ -312,6 +316,7 @@
     {
       "id": "diy-box-fan-filter",
       "category": "indoor",
+      "group": "purifier-buy",
       "costTier": 1,
       "oneOffRupees": {
         "value": 2000,
@@ -340,6 +345,7 @@
     {
       "id": "buy-purifier-bedroom",
       "category": "indoor",
+      "group": "purifier-buy",
       "costTier": 2,
       "oneOffRupees": {
         "value": 9000,
@@ -368,6 +374,7 @@
     {
       "id": "buy-purifier-living",
       "category": "indoor",
+      "group": "purifier-buy",
       "costTier": 2,
       "oneOffRupees": {
         "value": 9000,
@@ -396,6 +403,7 @@
     {
       "id": "metro-instead-of-car",
       "category": "routine",
+      "group": "commute-mode",
       "costTier": 0,
       "oneOffRupees": {
         "value": 0,
@@ -427,6 +435,7 @@
     {
       "id": "bus-instead-of-car",
       "category": "routine",
+      "group": "commute-mode",
       "costTier": 0,
       "oneOffRupees": {
         "value": 0,
@@ -458,6 +467,7 @@
     {
       "id": "carpool",
       "category": "routine",
+      "group": "commute-mode",
       "costTier": 0,
       "oneOffRupees": {
         "value": 0,
@@ -512,6 +522,7 @@
     {
       "id": "walk-cycle-short-trips",
       "category": "routine",
+      "group": "commute-mode",
       "costTier": 0,
       "oneOffRupees": {
         "value": 0,
@@ -575,6 +586,7 @@
     {
       "id": "switch-to-induction",
       "category": "alternative",
+      "group": "cooking-fuel",
       "costTier": 2,
       "oneOffRupees": {
         "value": 3000,
@@ -601,6 +613,7 @@
     {
       "id": "lpg-instead-of-biomass",
       "category": "alternative",
+      "group": "cooking-fuel",
       "costTier": 2,
       "oneOffRupees": {
         "value": 3500,

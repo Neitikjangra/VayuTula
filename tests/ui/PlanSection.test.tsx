@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import type { PlanRequest } from '@/domain';
 import { displayTula } from '@/engine/display';
+import { onePerGroup } from '@/engine/plan';
 import { rankActions } from '@/engine/rank';
 import { DeleteDataButton, deleteLocalData } from '@/ui/DeleteDataButton';
 import { resetLangForTests } from '@/ui/langStore';
@@ -44,6 +45,8 @@ afterEach(() => {
 });
 
 const ranked = () => rankActions(profile, forecast, new Date().toISOString());
+/** What today's plan chooses from: the ranked list with one action per choice group. */
+const planRanked = () => onePerGroup(ranked());
 
 async function renderPlan() {
   await act(async () => {
@@ -58,7 +61,7 @@ const planCards = async () =>
 
 describe("today's plan (FR-6)", () => {
   it('shows the AI-written plan in order, with time windows and AI labels', async () => {
-    const ids = ranked()
+    const ids = planRanked()
       .slice(0, 3)
       .map((r) => r.action.id);
     planReply = () =>
@@ -102,7 +105,7 @@ describe("today's plan (FR-6)", () => {
     planReply = () => new Response(null, { status: 503 });
     await renderPlan();
     const cards = await planCards();
-    expect(cards.length).toBe(Math.min(5, ranked().length));
+    expect(cards.length).toBe(Math.min(5, planRanked().length));
     expect(screen.queryByText('AI-written reason')).toBeNull();
     const top = displayTula(ranked()[0]!.tula);
     if (top.inhaledTotal > 0) {
@@ -120,11 +123,11 @@ describe("today's plan (FR-6)", () => {
     );
     await renderPlan();
     expect(screen.getByText('Adding AI-written reasons…')).toBeTruthy();
-    expect((await planCards()).length).toBe(Math.min(5, ranked().length));
+    expect((await planCards()).length).toBe(Math.min(5, planRanked().length));
   });
 
   it('reuses the plan saved on this device instead of asking again', async () => {
-    const ids = ranked()
+    const ids = planRanked()
       .slice(0, 3)
       .map((r) => r.action.id);
     planReply = () =>
@@ -153,11 +156,9 @@ describe("today's plan (FR-6)", () => {
       within(card).getByText('Outdoor PM2.5, next 24 h average: 150 µg/m³ (test)'),
     ).toBeTruthy();
     expect(within(card).getByText(/^Breathe in: indoor PM2.5 is estimated/)).toBeTruthy();
-    expect(
-      within(card).getByText(
-        'factors.deposition = 0.2 1/h · source not yet verified · Provisional',
-      ),
-    ).toBeTruthy();
+    const deposition = within(card).getByTitle('factors.deposition');
+    expect(deposition.textContent).toContain('Particles settling indoors (per hour): 0.2');
+    expect(deposition.textContent).toMatch(/Provisional|verified \d{4}-\d{2}-\d{2}/);
     expect(within(card).getByText(/^Confidence: (high|medium|low)\./)).toBeTruthy();
   });
 

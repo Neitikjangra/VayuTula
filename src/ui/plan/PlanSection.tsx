@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import type { Forecast, PlanResponse, Profile } from '@/domain';
+import { displayTula } from '@/engine/display';
+import { todayTotals } from '@/engine/meter';
 import { t, type Lang, type MessageKey } from '@/i18n';
 import { loadProfile } from '../profileStorage';
 import { useLang } from '../useLang';
@@ -10,7 +12,9 @@ import { ActionCard } from './ActionCard';
 import { NudgeBanner } from './NudgeBanner';
 import { planData, type PlanData } from './planData';
 import { PlanItemCard } from './PlanItemCard';
+import { TulaMeter } from './TulaMeter';
 import { usePlan } from './usePlan';
+import { useTicks } from './useTicks';
 
 function Message({ lang, message }: { lang: Lang; message: MessageKey }) {
   return (
@@ -33,9 +37,11 @@ interface ListProps {
   profile: Profile;
   data: PlanData;
   plan: PlanResponse;
+  done: string[];
+  toggle: (actionId: string) => void;
 }
 
-function PlanList({ lang, profile, data, plan }: ListProps) {
+function PlanList({ lang, profile, data, plan, done, toggle }: ListProps) {
   const budget = t(lang, `budget.${profile.budgetTier}`);
   return (
     <ol aria-labelledby="plan-heading" className="flex flex-col gap-3">
@@ -49,6 +55,8 @@ function PlanList({ lang, profile, data, plan }: ListProps) {
             {...{ lang, ranked, candidate, data, budget }}
             whyText={item.whyText}
             members={profile.members}
+            done={done.includes(item.actionId)}
+            onToggle={() => toggle(item.actionId)}
           />
         );
       })}
@@ -56,7 +64,9 @@ function PlanList({ lang, profile, data, plan }: ListProps) {
   );
 }
 
-function AllActions({ lang, profile, data }: Omit<ListProps, 'plan'>) {
+type SectionProps = Omit<ListProps, 'plan' | 'done' | 'toggle'>;
+
+function AllActions({ lang, profile, data }: SectionProps) {
   return (
     <details className="rounded-xl border border-slate-300 bg-white p-4">
       <summary className="min-h-11 cursor-pointer py-2 text-lg font-semibold text-slate-900">
@@ -72,8 +82,18 @@ function AllActions({ lang, profile, data }: Omit<ListProps, 'plan'>) {
   );
 }
 
-function TodayPlan({ lang, profile, data }: Omit<ListProps, 'plan'>) {
+/** The displayed Tula numbers of each plan step, for today's meter. */
+function planSteps(plan: PlanResponse, data: PlanData) {
+  return plan.items.flatMap((item) => {
+    const ranked = data.ranked.find((r) => r.action.id === item.actionId);
+    return ranked ? [{ actionId: item.actionId, tula: displayTula(ranked.tula) }] : [];
+  });
+}
+
+function TodayPlan({ lang, profile, data }: SectionProps) {
   const { plan, writing } = usePlan(profile, data);
+  const { done, toggle } = useTicks();
+  const totals = todayTotals(planSteps(plan, data), done);
   return (
     <>
       <p className="text-base text-slate-700">{t(lang, 'plan.todayIntro')}</p>
@@ -82,7 +102,8 @@ function TodayPlan({ lang, profile, data }: Omit<ListProps, 'plan'>) {
           {t(lang, 'plan.writing')}
         </p>
       )}
-      <PlanList {...{ lang, profile, data, plan }} />
+      <TulaMeter lang={lang} totals={totals} members={profile.members} />
+      <PlanList {...{ lang, profile, data, plan, done, toggle }} />
       <AllActions {...{ lang, profile, data }} />
     </>
   );

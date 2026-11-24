@@ -49,6 +49,25 @@ function Reason({
   );
 }
 
+const OUTLINE_BUTTON =
+  'min-h-11 self-start rounded-lg border border-sky-900 px-4 py-2 text-base font-medium text-sky-900 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-800';
+
+/** "Mark as done" / "Done": ticks the step for today's Tula meter (aria-pressed). */
+function DoneToggle({ lang, done, onToggle }: { lang: Lang; done: boolean; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={done}
+      onClick={onToggle}
+      className={
+        done ? `${OUTLINE_BUTTON} border-emerald-800 bg-emerald-800 text-white` : OUTLINE_BUTTON
+      }
+    >
+      {t(lang, done ? 'plan.isDone' : 'plan.markDone')}
+    </button>
+  );
+}
+
 interface Props {
   lang: Lang;
   ranked: RankedAction;
@@ -57,14 +76,37 @@ interface Props {
   members: Member[];
   data: PlanData;
   budget: string;
+  done: boolean;
+  onToggle: () => void;
 }
 
-/** One plan item (FR-6): title, badges, time window, reason, Tula scale and the why panel (FR-7). */
-export function PlanItemCard({ lang, ranked, candidate, whyText, members, data, budget }: Props) {
+/** "Why this step?" with its panel (FR-7). */
+function WhyToggle(props: Omit<Props, 'whyText' | 'members' | 'done' | 'onToggle'>) {
   const panelId = useId();
   const [open, setOpen] = useState(false);
   return (
-    <li className="flex flex-col gap-3 rounded-xl border border-slate-300 bg-white p-4">
+    <>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((o) => !o)}
+        className={OUTLINE_BUTTON}
+      >
+        {t(props.lang, 'plan.why')}
+      </button>
+      {open && <WhyPanel id={panelId} {...props} />}
+    </>
+  );
+}
+
+/** One plan item (FR-6): title, badges, time window, reason, Tula scale, done tick and why panel. */
+export function PlanItemCard(props: Props) {
+  const { lang, ranked, candidate, whyText, members, done, onToggle } = props;
+  return (
+    <li
+      className={`flex flex-col gap-3 rounded-xl bg-white p-4 ${done ? 'border-2 border-emerald-800' : 'border border-slate-300'}`}
+    >
       <h3 className="text-lg font-semibold text-slate-900">
         {actionTitle(lang, candidate.actionId)}
       </h3>
@@ -72,25 +114,16 @@ export function PlanItemCard({ lang, ranked, candidate, whyText, members, data, 
       <p className="text-base font-medium text-sky-900">{windowText(lang, candidate)}</p>
       <Reason lang={lang} whyText={whyText} candidate={candidate} />
       <TulaScale lang={lang} tula={displayTula(ranked.tula)} members={members} />
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => setOpen((o) => !o)}
-        className="min-h-11 self-start rounded-lg border border-sky-900 px-4 py-2 text-base font-medium text-sky-900 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-800"
-      >
-        {t(lang, 'plan.why')}
-      </button>
-      {open && (
-        <WhyPanel
+      <div className="flex flex-wrap gap-2">
+        <DoneToggle lang={lang} done={done} onToggle={onToggle} />
+        <WhyToggle
           lang={lang}
-          id={panelId}
           ranked={ranked}
           candidate={candidate}
-          data={data}
-          budget={budget}
+          data={props.data}
+          budget={props.budget}
         />
-      )}
+      </div>
     </li>
   );
 }

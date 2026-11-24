@@ -71,6 +71,8 @@ export type Modifies = z.infer<typeof ModifiesSchema>;
 export const ActionDefSchema = z.object({
   id: z.string().check(z.regex(/^[a-z0-9-]+$/)),
   category: z.enum(ACTION_CATEGORIES),
+  /** Actions in the same group are alternatives (e.g. bus vs metro); a plan shows one. */
+  group: z.optional(z.string().check(z.regex(/^[a-z-]+$/))),
   costTier: z.union([z.literal(0), z.literal(1), z.literal(2)]),
   oneOffRupees: ConfigValueSchema,
   effort: z.int().check(z.gte(1), z.lte(3)),

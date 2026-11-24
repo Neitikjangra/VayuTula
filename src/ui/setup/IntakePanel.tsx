@@ -94,6 +94,7 @@ export function IntakePanel({ lang, draft, invalid, onChange, onSave, onFallback
         lang={lang}
         draft={draft}
         answered={intake.progress.answered}
+        roomsKnown={intake.progress.facts.rooms !== undefined}
         onEdit={onEdit}
       />
       <SaveArea lang={lang} invalid={invalid} onSave={onSave} />
