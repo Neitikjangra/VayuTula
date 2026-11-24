@@ -1,9 +1,11 @@
 import { forecastService } from '@/data';
 import { GeocodeQuerySchema } from '@/domain';
-import { jsonError, logFailure } from '@/lib';
+import { dataRateLimiter, jsonError, logFailure, rateLimited } from '@/lib';
 
 /** GET /api/geocode?q&lang — city search (FR-2). q is 2–80 characters. */
 export async function GET(request: Request): Promise<Response> {
+  const limited = rateLimited(dataRateLimiter, request);
+  if (limited) return limited;
   const query = GeocodeQuerySchema.safeParse(Object.fromEntries(new URL(request.url).searchParams));
   if (!query.success) return jsonError(400, 'invalid_query');
   try {

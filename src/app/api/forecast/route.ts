@@ -1,9 +1,11 @@
 import { forecastService } from '@/data';
 import { ForecastQuerySchema } from '@/domain';
-import { jsonError, logFailure } from '@/lib';
+import { dataRateLimiter, jsonError, logFailure, rateLimited } from '@/lib';
 
 /** GET /api/forecast?lat&lon — hourly PM2.5 (FR-2), cached 1 h per rounded location. */
 export async function GET(request: Request): Promise<Response> {
+  const limited = rateLimited(dataRateLimiter, request);
+  if (limited) return limited;
   const query = ForecastQuerySchema.safeParse(
     Object.fromEntries(new URL(request.url).searchParams),
   );

@@ -63,6 +63,24 @@ describe('GET /api/forecast', () => {
   });
 });
 
+describe('data route rate limit', () => {
+  it('allows 60 forecast requests a minute per client, then 429 with Retry-After', async () => {
+    stubFetch(airQuality);
+    const req = () =>
+      getForecast(
+        new Request('http://localhost/api/forecast?lat=1.11&lon=2.22', {
+          headers: { 'x-forwarded-for': '192.0.2.50' },
+        }),
+      );
+    const statuses: number[] = [];
+    for (let i = 0; i < 61; i++) statuses.push((await req()).status);
+    expect(statuses.slice(0, 60).every((s) => s === 200)).toBe(true);
+    const blocked = await req();
+    expect(blocked.status).toBe(429);
+    expect(Number(blocked.headers.get('retry-after'))).toBeGreaterThan(0);
+  });
+});
+
 describe('GET /api/geocode', () => {
   it.each([
     ['missing q', ''],
