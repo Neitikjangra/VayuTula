@@ -1,7 +1,8 @@
 'use client';
 
 import { useId, useState, type FormEvent } from 'react';
-import { GEOCODE_MAX_CHARS, type Place } from '@/domain';
+import type { Place } from '@/domain';
+import { GEOCODE_MAX_CHARS } from '@/domain/limits';
 import { format, t, type Lang } from '@/i18n';
 import type { SelectedPlace } from './forecastStorage';
 import { useLang } from './useLang';

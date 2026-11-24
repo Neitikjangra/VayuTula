@@ -1,4 +1,5 @@
 import * as z from 'zod/mini';
+import { GEOCODE_MAX_CHARS, GEOCODE_MIN_CHARS } from './limits';
 
 const DECIMAL = /^-?\d{1,3}(\.\d{1,8})?$/;
 
@@ -16,8 +17,7 @@ export const ForecastQuerySchema = z.object({
 });
 export type ForecastQuery = z.infer<typeof ForecastQuerySchema>;
 
-export const GEOCODE_MIN_CHARS = 2;
-export const GEOCODE_MAX_CHARS = 80;
+export { GEOCODE_MAX_CHARS, GEOCODE_MIN_CHARS } from './limits';
 
 /** Query for GET /api/geocode. The query is trimmed before its length is checked. */
 export const GeocodeQuerySchema = z.object({

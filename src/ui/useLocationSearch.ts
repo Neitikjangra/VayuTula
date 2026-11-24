@@ -1,7 +1,9 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { GEOCODE_MAX_CHARS, GEOCODE_MIN_CHARS, roundCoord, type Place } from '@/domain';
+import type { Place } from '@/domain';
+import { roundCoord } from '@/domain/geo';
+import { GEOCODE_MAX_CHARS, GEOCODE_MIN_CHARS } from '@/domain/limits';
 import type { Lang, MessageKey } from '@/i18n';
 import { fetchPlaces } from './forecastClient';
 import type { SelectedPlace } from './forecastStorage';

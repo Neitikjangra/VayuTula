@@ -24,9 +24,9 @@ describe('language toggle', () => {
     );
   });
 
-  it('switches text, <html lang> and storage to Hindi', () => {
+  it('switches text, <html lang> and storage to Hindi', async () => {
     render(<HomeIntro />);
-    act(() => {
+    await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'हिन्दी' }));
     });
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('वायुतुला');
@@ -42,12 +42,12 @@ describe('language toggle', () => {
     expect(document.documentElement.lang).toBe('hi');
   });
 
-  it('still switches when storage is blocked', () => {
+  it('still switches when storage is blocked', async () => {
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new Error('blocked');
     });
     render(<HomeIntro />);
-    act(() => {
+    await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'हिन्दी' }));
     });
     expect(document.documentElement.lang).toBe('hi');

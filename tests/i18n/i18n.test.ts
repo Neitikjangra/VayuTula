@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import en from '@/i18n/en.json';
 import hi from '@/i18n/hi.json';
-import { DEFAULT_LANG, format, isLang, localeOf, t } from '@/i18n';
+import { appConfig } from '@/config';
+import { DEFAULT_LANG, format, isLang, isMessageKey, localeOf, t } from '@/i18n';
 
 describe('i18n catalogues', () => {
   it('en and hi have exactly the same keys', () => {
@@ -18,7 +19,12 @@ describe('i18n catalogues', () => {
 
   it('Hindi strings that are not language names use Devanagari', () => {
     const devanagari = /[ऀ-ॿ]/;
-    const languageNeutral = new Set(['lang.en', 'forecast.dayRange']);
+    const languageNeutral = new Set([
+      'lang.en',
+      'forecast.dayRange',
+      'tula.rupees',
+      'tula.personValue',
+    ]);
     const translated = Object.entries(hi).filter(([key]) => !languageNeutral.has(key));
     for (const [, value] of translated) {
       expect(value).toMatch(devanagari);
@@ -52,6 +58,16 @@ describe('format()', () => {
     for (const key of Object.keys(en) as (keyof typeof en)[]) {
       expect(names(hi[key])).toEqual(names(en[key]));
     }
+  });
+});
+
+describe('action titles', () => {
+  it('every action in actions.json has a title in both languages', () => {
+    for (const action of appConfig.actions) {
+      const key = `action.${action.id}`;
+      expect(isMessageKey(key), key).toBe(true);
+    }
+    expect(isMessageKey('action.not-real')).toBe(false);
   });
 });
 

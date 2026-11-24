@@ -2,7 +2,8 @@
 
 import { useCallback, useRef, useState } from 'react';
 import type { Forecast } from '@/domain';
-import { minutesSince } from '@/engine';
+// Direct module import keeps the ranking engine and config out of the first load.
+import { minutesSince } from '@/engine/time';
 import { fetchForecast } from './forecastClient';
 import { loadSavedForecast, saveForecast, savePlace, type SelectedPlace } from './forecastStorage';
 
@@ -34,7 +35,7 @@ async function resolveForecast(place: SelectedPlace): Promise<ForecastState> {
       ageMinutes: result.ageMinutes,
     };
   } catch {
-    const saved = loadSavedForecast(place.lat, place.lon);
+    const saved = await loadSavedForecast(place.lat, place.lon);
     if (!saved) return { status: 'error', place };
     const ageMinutes = minutesSince(saved.fetchedAt, Date.now());
     return { status: 'ready', place, forecast: saved, notice: 'staleLocal', ageMinutes };

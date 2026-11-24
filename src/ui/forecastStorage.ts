@@ -1,18 +1,11 @@
-import * as z from 'zod/mini';
-import { ForecastSchema, roundCoord, type Forecast } from '@/domain';
+import type { Forecast } from '@/domain';
+import { roundCoord } from '@/domain/geo';
+import type { SelectedPlace } from './selectedPlace';
+
+export type { SelectedPlace } from './selectedPlace';
 
 const PLACE_KEY = 'vayutula.place';
 const FORECAST_KEY = 'vayutula.lastForecast';
-
-/** The place the forecast is shown for. `device` places come from browser location. */
-export const SelectedPlaceSchema = z.object({
-  kind: z.enum(['search', 'device']),
-  name: z.string().check(z.maxLength(200)),
-  detail: z.optional(z.string().check(z.maxLength(300))),
-  lat: z.number().check(z.gte(-90), z.lte(90)),
-  lon: z.number().check(z.gte(-180), z.lte(180)),
-});
-export type SelectedPlace = z.infer<typeof SelectedPlaceSchema>;
 
 function read(key: string): unknown {
   try {
@@ -31,10 +24,17 @@ function write(key: string, value: unknown): void {
   }
 }
 
-/** Last chosen place, or null. */
-export function loadPlace(): SelectedPlace | null {
-  const parsed = SelectedPlaceSchema.safeParse(read(PLACE_KEY));
-  return parsed.success ? parsed.data : null;
+/** The stored place before validation (parse it with `parsePlace`). */
+export function readPlaceRaw(): unknown {
+  return read(PLACE_KEY);
+}
+
+/** Last chosen place, validated, or null. The schema loads only when a place is stored. */
+export async function loadPlace(): Promise<SelectedPlace | null> {
+  const raw = readPlaceRaw();
+  if (raw === null) return null;
+  const { parsePlace } = await import('./selectedPlace');
+  return parsePlace(raw);
 }
 
 /** Remembers the chosen place, rounded to 2 decimals. */
@@ -47,9 +47,12 @@ export function saveForecast(forecast: Forecast): void {
   write(FORECAST_KEY, forecast);
 }
 
-/** Saved forecast for the same rounded location, or null. */
-export function loadSavedForecast(lat: number, lon: number): Forecast | null {
-  const parsed = ForecastSchema.safeParse(read(FORECAST_KEY));
+/** Saved forecast for the same rounded location, validated, or null. */
+export async function loadSavedForecast(lat: number, lon: number): Promise<Forecast | null> {
+  const raw = read(FORECAST_KEY);
+  if (raw === null) return null;
+  const { ForecastSchema } = await import('@/domain/forecast');
+  const parsed = ForecastSchema.safeParse(raw);
   if (!parsed.success) return null;
   const same = parsed.data.lat === roundCoord(lat) && parsed.data.lon === roundCoord(lon);
   return same ? parsed.data : null;

@@ -24,7 +24,7 @@ export function LanguageToggle() {
             type="button"
             lang={option}
             aria-pressed={active}
-            onClick={() => setLang(option)}
+            onClick={() => void setLang(option)}
             className={`${BUTTON_BASE} ${active ? 'bg-sky-900 text-white' : 'text-slate-900 hover:bg-slate-100'}`}
           >
             {t(option, option === 'en' ? 'lang.en' : 'lang.hi')}

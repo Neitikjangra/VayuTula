@@ -2,7 +2,8 @@
 
 import { useId } from 'react';
 import type { Forecast } from '@/domain';
-import { forecastPeak, groupForecastByDay, type ForecastDay } from '@/engine';
+// Direct module import: the engine barrel would pull the ranking engine and config into first load.
+import { forecastPeak, groupForecastByDay, type ForecastDay } from '@/engine/forecastDays';
 import { format, type Lang } from '@/i18n';
 import { formatDay, formatHour, formatNumber } from './format';
 

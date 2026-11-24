@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import type { Forecast } from '@/domain';
 import { t, type Lang } from '@/i18n';
 import { ForecastView } from './ForecastView';
 import { loadPlace } from './forecastStorage';
@@ -37,14 +38,23 @@ function StatusLine({
 }
 
 /** FR-2 panel: choose a place, then see its 4-day hourly outdoor PM2.5 forecast. */
-export function ForecastPanel() {
+export function ForecastPanel({
+  onForecast,
+}: {
+  onForecast?: (forecast: Forecast | null) => void;
+}) {
   const lang = useLang();
   const { state, load } = useForecast();
 
   useEffect(() => {
-    const saved = loadPlace();
-    if (saved) void load(saved);
+    void loadPlace().then((saved) => {
+      if (saved) void load(saved);
+    });
   }, [load]);
+
+  useEffect(() => {
+    onForecast?.(state.status === 'ready' ? state.forecast : null);
+  }, [state, onForecast]);
 
   const retry = () => {
     if (state.status === 'error') void load(state.place);

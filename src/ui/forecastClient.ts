@@ -1,10 +1,5 @@
-import {
-  ForecastResponseSchema,
-  GeocodeResponseSchema,
-  roundCoord,
-  type ForecastResponse,
-  type Place,
-} from '@/domain';
+import type { ForecastResponse, Place } from '@/domain';
+import { roundCoord } from '@/domain/geo';
 import type { Lang } from '@/i18n';
 
 /** Failure calling our own API. `status` is 0 for a network error. */
@@ -17,6 +12,9 @@ export class ApiError extends Error {
     this.status = status;
   }
 }
+
+/** Schemas load with the first request instead of the first page load (bundle budget). */
+const schemas = () => import('@/domain/forecast');
 
 async function getJson(path: string): Promise<unknown> {
   let response: Response;
@@ -35,11 +33,19 @@ export async function fetchForecast(lat: number, lon: number): Promise<ForecastR
     lat: roundCoord(lat).toFixed(2),
     lon: roundCoord(lon).toFixed(2),
   });
-  return ForecastResponseSchema.parse(await getJson(`/api/forecast?${params.toString()}`));
+  const [{ ForecastResponseSchema }, body] = await Promise.all([
+    schemas(),
+    getJson(`/api/forecast?${params.toString()}`),
+  ]);
+  return ForecastResponseSchema.parse(body);
 }
 
 /** GET /api/geocode. */
 export async function fetchPlaces(query: string, lang: Lang): Promise<Place[]> {
   const params = new URLSearchParams({ q: query, lang });
-  return GeocodeResponseSchema.parse(await getJson(`/api/geocode?${params.toString()}`)).places;
+  const [{ GeocodeResponseSchema }, body] = await Promise.all([
+    schemas(),
+    getJson(`/api/geocode?${params.toString()}`),
+  ]);
+  return GeocodeResponseSchema.parse(body).places;
 }
