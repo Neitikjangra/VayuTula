@@ -6,7 +6,7 @@ import {
   type IntakeRequest,
   type NextField,
 } from '@/domain';
-import { generateJson, type GenerateJson } from './client';
+import { generateJson, isUnavailable, type GenerateJson } from './client';
 import { INTAKE_JSON_SCHEMA, INTAKE_SYSTEM, buildIntakePrompt, retryNote } from './prompts/intake';
 import { validateIntakeOutput, type IntakeModelOutput } from './validators';
 
@@ -74,6 +74,7 @@ export async function runIntake(
       lastError = new Error('invalid model output');
     } catch (error) {
       lastError = error;
+      if (isUnavailable(error)) break;
     }
   }
   return { ok: false, error: lastError };

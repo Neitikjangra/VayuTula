@@ -73,15 +73,16 @@ function AllActions({ lang, profile, data }: Omit<ListProps, 'plan'>) {
 }
 
 function TodayPlan({ lang, profile, data }: Omit<ListProps, 'plan'>) {
-  const plan = usePlan(profile, data);
+  const { plan, writing } = usePlan(profile, data);
   return (
     <>
       <p className="text-base text-slate-700">{t(lang, 'plan.todayIntro')}</p>
-      {plan ? (
-        <PlanList {...{ lang, profile, data, plan }} />
-      ) : (
-        <p className="text-base text-slate-800">{t(lang, 'plan.writing')}</p>
+      {writing && (
+        <p role="status" className="text-sm text-slate-700">
+          {t(lang, 'plan.writing')}
+        </p>
       )}
+      <PlanList {...{ lang, profile, data, plan }} />
       <AllActions {...{ lang, profile, data }} />
     </>
   );

@@ -107,6 +107,17 @@ describe("today's plan (FR-6)", () => {
     }
   });
 
+  it('shows the plan at once while the AI is still writing (no waiting, found live)', async () => {
+    planReply = () => new Response(null, { status: 200 });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise<Response>(() => undefined)),
+    );
+    await renderPlan();
+    expect(screen.getByText('Adding AI-written reasons…')).toBeTruthy();
+    expect((await planCards()).length).toBe(Math.min(5, ranked().length));
+  });
+
   it('reuses the plan saved on this device instead of asking again', async () => {
     const ids = ranked()
       .slice(0, 3)

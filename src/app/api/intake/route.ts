@@ -3,6 +3,9 @@ import { runIntake } from '@/ai/intake';
 import { IntakeRequestSchema } from '@/domain';
 import { NO_STORE, aiRateLimiter, jsonError, logFailure, rateLimited, readJsonBody } from '@/lib';
 
+/** Vercel: allow two model calls of up to 8 s each, so a slow AI never drops the connection. */
+export const maxDuration = 30;
+
 const MAX_BODY_BYTES = 32_768;
 
 /** POST /api/intake — one conversational setup turn (FR-1). */

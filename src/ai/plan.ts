@@ -1,5 +1,5 @@
 import type { PlanRequest, PlanResponse } from '@/domain';
-import { generateJson, type GenerateJson } from './client';
+import { generateJson, isUnavailable, type GenerateJson } from './client';
 import { templatePlan } from './fallback';
 import { retryNote } from './prompts/intake';
 import { PLAN_JSON_SCHEMA, PLAN_SYSTEM, buildPlanPrompt } from './prompts/plan';
@@ -39,6 +39,7 @@ export async function runPlanWithReason(
       error = new Error('invalid model output');
     } catch (caught) {
       error = caught;
+      if (isUnavailable(caught)) break;
     }
   }
   return { plan: templatePlan(req.candidates), error };

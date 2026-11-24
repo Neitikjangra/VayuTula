@@ -27,6 +27,11 @@ export class AiError extends Error {
   }
 }
 
+/** True when the AI cannot answer now (no key, over quota, overloaded, slow): retrying won't help. */
+export function isUnavailable(error: unknown): boolean {
+  return error instanceof AiError && ['no_key', 'unavailable', 'timeout'].includes(error.kind);
+}
+
 export interface JsonRequest {
   system: string;
   user: string;

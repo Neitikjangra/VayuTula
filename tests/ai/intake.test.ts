@@ -135,10 +135,16 @@ describe('runIntake() with a mocked model (FR-1)', () => {
     expect(calls[1]!.user).toMatch(/previous reply was rejected: nextField/);
   });
 
-  it('falls back when the model times out twice', async () => {
-    const { generate } = model(new AiError('timeout'), new AiError('timeout'));
+  it('falls back at once, without a retry, when the model times out', async () => {
+    const { generate } = model(new AiError('timeout'), englishReply);
     const result = await runIntake(request(), generate);
     expect(result).toEqual({ ok: false, error: expect.any(AiError) });
+    expect(generate).toHaveBeenCalledTimes(1);
+  });
+
+  it('still retries once after an unexpected error', async () => {
+    const { generate } = model(new Error('glitch'), englishReply);
+    expect((await runIntake(request(), generate)).ok).toBe(true);
   });
 
   it('never asks about a topic the reply just answered', async () => {

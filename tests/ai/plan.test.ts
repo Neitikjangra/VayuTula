@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { GenerateJson, JsonRequest } from '@/ai/client';
+import { AiError, type GenerateJson, type JsonRequest } from '@/ai/client';
 import { templatePlan } from '@/ai/fallback';
 import { runPlan } from '@/ai/plan';
 import { PLAN_SYSTEM } from '@/ai/prompts/plan';
@@ -181,6 +181,16 @@ describe('runPlan()', () => {
     const { generate } = model(new Error('down'), new Error('down'));
     expect((await runPlan(request(), generate)).source).toBe('template');
   });
+
+  it.each(['unavailable', 'timeout', 'no_key'] as const)(
+    'does not retry when the AI is %s (found live: retries doubled the wait to 30 s)',
+    async (kind) => {
+      const { generate } = model(new AiError(kind), { items: goodItems });
+      const plan = await runPlan(request(), generate);
+      expect(generate).toHaveBeenCalledTimes(1);
+      expect(plan.source).toBe('template');
+    },
+  );
 });
 
 describe('templatePlan()', () => {

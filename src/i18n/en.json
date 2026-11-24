@@ -199,7 +199,7 @@
   "summary.edit": "Check or edit in the form",
   "plan.todayHeading": "Today's plan",
   "plan.todayIntro": "A few steps for today, free ones first. Every number is an estimate from your home and the forecast.",
-  "plan.writing": "Writing today's plan…",
+  "plan.writing": "Adding AI-written reasons…",
   "plan.aiWritten": "AI-written reason",
   "plan.window": "When: {from}–{to}",
   "plan.anyTime": "When: any time today",
