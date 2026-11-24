@@ -24,6 +24,8 @@ describe('i18n catalogues', () => {
       'forecast.dayRange',
       'tula.rupees',
       'tula.personValue',
+      'summary.person',
+      'summary.room',
     ]);
     const translated = Object.entries(hi).filter(([key]) => !languageNeutral.has(key));
     for (const [, value] of translated) {

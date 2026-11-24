@@ -36,6 +36,7 @@ test('fill the form for a 2BHK with one purifier and see ranked actions (R2)', a
   await page.getByRole('button', { name: 'Search' }).click();
   await page.getByRole('button', { name: 'Noida, Uttar Pradesh, India' }).click();
   await expect(page.getByText('Using Noida.')).toBeVisible();
+  await page.getByRole('button', { name: 'Use the form instead' }).click();
 
   await page.getByRole('button', { name: 'Add person' }).click();
   await page.getByLabel('Name or nickname').nth(1).fill('Kid');

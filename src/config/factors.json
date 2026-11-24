@@ -306,5 +306,55 @@
       "source": "TODO",
       "verifiedOn": null
     }
+  },
+  "intakeDefaults": {
+    "roomAreaSmall": {
+      "value": 9,
+      "unit": "m² for a room described as small",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "roomAreaMedium": {
+      "value": 12,
+      "unit": "m² for a room of unstated size",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "roomAreaLarge": {
+      "value": 16,
+      "unit": "m² for a room described as large",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "sleepAdult": {
+      "value": [22, 7],
+      "unit": "local hours asleep (from, until) for adults and elders",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "sleepChild": {
+      "value": [21, 7],
+      "unit": "local hours asleep (from, until) for children",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "dayAtHomeFrom": {
+      "value": 7,
+      "unit": "local hour people at home all day move to the living room",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "eveningFrom": {
+      "value": 18,
+      "unit": "local hour people away in the day are back home",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "mealHours": {
+      "value": [8, 20, 13, 17, 11, 15],
+      "unit": "default cooking hours, in order of meals",
+      "source": "TODO",
+      "verifiedOn": null
+    }
   }
 }

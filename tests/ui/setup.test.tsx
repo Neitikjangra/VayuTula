@@ -2,8 +2,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { ProfileSchema } from '@/domain';
-import { resetLangForTests } from '@/ui/langStore';
-import { ProfileForm } from '@/ui/setup/ProfileForm';
+import { LANG_STORAGE_KEY, resetLangForTests } from '@/ui/langStore';
+import SetupScreen from '@/ui/setup/SetupScreen';
 
 const push = vi.fn();
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push }) }));
@@ -25,6 +25,12 @@ function savedProfile() {
   return raw === null ? null : ProfileSchema.parse(JSON.parse(raw));
 }
 
+/** Opens /setup and switches to the manual form. */
+function renderForm() {
+  render(<SetupScreen />);
+  fireEvent.click(screen.getByRole('button', { name: 'Use the form instead' }));
+}
+
 async function submit() {
   await act(async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save and see actions' }));
@@ -33,7 +39,7 @@ async function submit() {
 
 describe('manual profile form', () => {
   it('starts with the chosen city and a valid default home', async () => {
-    render(<ProfileForm lang="en" />);
+    renderForm();
     expect(screen.getByText('Using Noida.')).toBeTruthy();
     await submit();
     expect(savedProfile()?.city).toBe('Noida');
@@ -41,7 +47,7 @@ describe('manual profile form', () => {
   });
 
   it('saves a 2BHK with a purifier and a child', async () => {
-    render(<ProfileForm lang="en" />);
+    renderForm();
     fireEvent.click(screen.getByRole('button', { name: 'Add person' }));
     const people = screen.getAllByLabelText('Name or nickname');
     fireEvent.change(people[1]!, { target: { value: 'Kid' } });
@@ -63,7 +69,7 @@ describe('manual profile form', () => {
   });
 
   it('does not save out-of-range answers: the browser blocks them first', async () => {
-    render(<ProfileForm lang="en" />);
+    renderForm();
     fireEvent.change(screen.getAllByLabelText('Floor area (m²)')[0]!, { target: { value: '1' } });
     await submit();
     expect(savedProfile()).toBeNull();
@@ -71,7 +77,7 @@ describe('manual profile form', () => {
   });
 
   it('still refuses and explains if the browser lets an invalid answer through', async () => {
-    render(<ProfileForm lang="en" />);
+    renderForm();
     fireEvent.change(screen.getAllByLabelText('Floor area (m²)')[0]!, { target: { value: '1' } });
     await act(async () => {
       fireEvent.submit(
@@ -85,7 +91,7 @@ describe('manual profile form', () => {
   });
 
   it('lets you say who is in a room and when', async () => {
-    render(<ProfileForm lang="en" />);
+    renderForm();
     const kitchen = screen
       .getAllByRole('listitem')
       .find((li) => within(li).queryAllByDisplayValue('Kitchen').length > 0)!;
@@ -99,13 +105,46 @@ describe('manual profile form', () => {
   });
 
   it('keeps the city search outside the profile form (no nested forms)', () => {
-    render(<ProfileForm lang="en" />);
+    renderForm();
     const search = screen.getByRole('search');
     expect(search.parentElement?.closest('form')).toBeNull();
   });
 
+  it('opens the form directly when a home is already saved', () => {
+    window.localStorage.setItem(
+      'vayutula.profile',
+      JSON.stringify(
+        ProfileSchema.parse({
+          city: 'Noida',
+          lat: 28.58,
+          lon: 77.33,
+          lang: 'en',
+          members: [{ id: 'm1', label: 'Me', ageGroup: 'adult', sensitive: false }],
+          rooms: [{ id: 'r1', name: 'Bedroom', kind: 'bedroom', areaM2: 12, occupancy: [] }],
+          cooking: {
+            fuel: 'lpg',
+            mealsPerDay: 2,
+            mealHours: [8, 20],
+            chimney: false,
+            kitchenDoor: false,
+          },
+          sources: { incensePerDay: 0, coilNightsPerWeek: 0, smokerIndoors: false },
+          commute: { mode: 'none', kmPerDay: 0, daysPerWeek: 0 },
+          budgetTier: 0,
+        }),
+      ),
+    );
+    render(<SetupScreen />);
+    expect(
+      screen.getByRole('button', { name: 'Describe your home in your own words' }),
+    ).toBeTruthy();
+    expect(screen.getAllByDisplayValue('Bedroom').length).toBeGreaterThan(0);
+  });
+
   it('renders labels in Hindi', () => {
-    render(<ProfileForm lang="hi" />);
+    window.localStorage.setItem(LANG_STORAGE_KEY, 'hi');
+    render(<SetupScreen />);
+    fireEvent.click(screen.getByRole('button', { name: 'इसके बजाय फ़ॉर्म इस्तेमाल करें' }));
     expect(screen.getByRole('button', { name: 'सहेजें और कदम देखें' })).toBeTruthy();
     expect(screen.getAllByLabelText('कमरे का नाम').length).toBe(3);
   });
