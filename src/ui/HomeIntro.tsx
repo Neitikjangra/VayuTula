@@ -5,10 +5,11 @@ import type { Forecast } from '@/domain';
 import { t } from '@/i18n';
 import { ForecastPanel } from './ForecastPanel';
 import { LanguageToggle } from './LanguageToggle';
-import { ActionListClient } from './plan/ActionListClient';
+import { DeleteDataButton } from './DeleteDataButton';
+import { PlanSectionClient } from './plan/PlanSectionClient';
 import { useLang } from './useLang';
 
-/** Home page: name, promise, language switch, the forecast and the actions ranked for this home. */
+/** Home page: name, promise, language switch, today's plan, the forecast and "delete my data". */
 export function HomeIntro() {
   const lang = useLang();
   const [forecast, setForecast] = useState<Forecast | null>(null);
@@ -22,8 +23,11 @@ export function HomeIntro() {
         <LanguageToggle />
       </header>
       <p className="text-lg leading-relaxed text-slate-900">{t(lang, 'home.promise')}</p>
+      <PlanSectionClient forecast={forecast} />
       <ForecastPanel onForecast={setForecast} />
-      <ActionListClient forecast={forecast} />
+      <footer className="mt-8 flex flex-col gap-2 border-t border-slate-300 pt-6">
+        <DeleteDataButton />
+      </footer>
     </main>
   );
 }

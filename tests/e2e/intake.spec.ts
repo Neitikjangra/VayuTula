@@ -46,6 +46,7 @@ test('type a Hindi description and watch the profile fill in (R3, FR-1)', async 
     );
   });
   await page.route('**/api/intake', (route) => route.fulfill({ json: hindiReply }));
+  await page.route('**/api/plan', (route) => route.fulfill({ status: 503, json: { error: 'x' } }));
   await page.route('**/api/forecast?*', (route) =>
     route.fulfill({ json: { forecast: liveForecast(), stale: false, ageMinutes: 0 } }),
   );
@@ -64,7 +65,7 @@ test('type a Hindi description and watch the profile fill in (R3, FR-1)', async 
   await page.getByRole('button', { name: 'सहेजें और कदम देखें' }).click();
 
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole('heading', { name: 'आपके घर के लिए कदम' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'आज की योजना' })).toBeVisible();
   expect(await page.getByRole('heading', { level: 3 }).count()).toBeGreaterThan(2);
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - window.innerWidth,

@@ -11,7 +11,8 @@ export function actionTitle(lang: Lang, id: string): string {
   return isMessageKey(key) ? t(lang, key) : id;
 }
 
-function Badges({ lang, ranked }: { lang: Lang; ranked: RankedAction }) {
+/** Cost tier, confidence and the provisional badge for an action. */
+export function Badges({ lang, ranked }: { lang: Lang; ranked: RankedAction }) {
   const tula = displayTula(ranked.tula);
   return (
     <p className="flex flex-wrap items-center gap-2 text-sm text-slate-800">

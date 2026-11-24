@@ -1,35 +1,7 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { mockApi } from './helpers';
 
-const HOUR_MS = 3_600_000;
-
-/** 120 hours of PM2.5 starting two hours ago, so the 48-hour engine window is always covered. */
-function liveForecast() {
-  const start = Math.floor(Date.now() / HOUR_MS) * HOUR_MS - 2 * HOUR_MS;
-  return {
-    source: 'Open-Meteo Air Quality API (CAMS)',
-    fetchedAt: new Date().toISOString(),
-    timezone: 'Asia/Kolkata',
-    lat: 28.58,
-    lon: 77.33,
-    hours: Array.from({ length: 120 }, (_, i) => ({
-      time: new Date(start + i * HOUR_MS).toISOString(),
-      pm25: 120 + 60 * Math.sin(i / 4),
-    })),
-  };
-}
-
-const places = [
-  { id: 7279746, name: 'Noida', admin1: 'Uttar Pradesh', country: 'India', lat: 28.58, lon: 77.33 },
-];
-
-async function mockApi(page: Page) {
-  await page.route('**/api/geocode?*', (route) => route.fulfill({ json: { places } }));
-  await page.route('**/api/forecast?*', (route) =>
-    route.fulfill({ json: { forecast: liveForecast(), stale: false, ageMinutes: 0 } }),
-  );
-}
-
-test('fill the form for a 2BHK with one purifier and see ranked actions (R2)', async ({ page }) => {
+test('setup with the form, then today’s plan and its why panel (R4)', async ({ page }) => {
   await mockApi(page);
   await page.goto('/setup');
   await page.getByLabel('City or area').fill('Noida');
@@ -47,12 +19,20 @@ test('fill the form for a 2BHK with one purifier and see ranked actions (R2)', a
   await page.getByRole('button', { name: 'Save and see actions' }).click();
 
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole('heading', { name: 'Actions for your home' })).toBeVisible();
-  const cards = page.getByRole('heading', { level: 3 });
-  await expect(cards.first()).toBeVisible();
-  expect(await cards.count()).toBeGreaterThan(3);
-  await expect(page.getByText('Breathe in').first()).toBeVisible();
-  await expect(page.getByText('Provisional').first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: "Today's plan" })).toBeVisible();
+  const plan = page.getByRole('list', { name: "Today's plan" });
+  const items = plan.getByRole('heading', { level: 3 });
+  await expect(items.first()).toBeVisible();
+  expect(await items.count()).toBeGreaterThanOrEqual(3);
+  expect(await items.count()).toBeLessThanOrEqual(5);
+  await expect(plan.getByText(/^When: /).first()).toBeVisible();
+  await expect(plan.getByText('Breathe in').first()).toBeVisible();
+  await expect(plan.getByText('Provisional').first()).toBeVisible();
+
+  await plan.getByRole('button', { name: 'Why this step?' }).first().click();
+  await expect(plan.getByText('What we used')).toBeVisible();
+  await expect(plan.getByText('Values used')).toBeVisible();
+  await expect(plan.getByText(/source not yet verified · Provisional/).first()).toBeVisible();
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - window.innerWidth,

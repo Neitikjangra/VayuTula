@@ -26,6 +26,7 @@ describe('i18n catalogues', () => {
       'tula.personValue',
       'summary.person',
       'summary.room',
+      'why.value',
     ]);
     const translated = Object.entries(hi).filter(([key]) => !languageNeutral.has(key));
     for (const [, value] of translated) {
