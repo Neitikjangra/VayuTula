@@ -3,6 +3,7 @@ export * from './action';
 export * from './config';
 export * from './forecast';
 export * from './geo';
+export * from './intake';
 export * from './profile';
 export * from './query';
 export * from './tula';
