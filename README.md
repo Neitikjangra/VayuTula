@@ -90,8 +90,10 @@ Prompts are versioned constants (`intake-v1`, `plan-v2`) with worked examples. L
 2. **Describe your home** at `/setup`, in English or Hindi: "We are four in a 2BHK, my mother coughs at night, Philips purifier in our room…". Gemini extracts facts; code converts units, matches the purifier model and works out who is in which room when. A live summary fills in; "Use the form instead" is always one tap away, and the form opens automatically if the AI is unavailable.
 3. **Today's plan** on the home page: 3–5 steps, free first, each with a time window ("When: 22:00–07:00"), a one-line reason (labelled when AI-written) and the Tula scale: breathe in, emit out, ₹.
 4. **Why this step?** opens the inputs used (outdoor average, home, budget), the formula in plain words, every config value with its source or "Provisional", and the confidence level.
-5. **Purifier nudge:** during the planned hours a banner says "Switch on the purifier now in Master bedroom"; "Done, it's on" logs the hours and the banner counts this week's purifier hours. Browser notifications are optional.
-6. **Delete my data** clears everything VayuTula stored on the device. There are no accounts and no database.
+5. **Tick off steps:** "Mark as done" on a step tips **Today's balance** at the top of the plan. It adds up exactly the numbers shown on the ticked steps (breathe-in per person, PM2.5, CO₂, ₹) as text that screen readers announce. Ticks stay on this device and reset each day; there is no history (FR-11 is out of scope).
+6. **Purifier nudge:** during the planned hours a banner says "Switch on the purifier now in Master bedroom"; "Done, it's on" logs the hours and the banner counts this week's purifier hours. Browser notifications are optional. "Add a daily reminder to my calendar" saves a standard `.ics` file (daily repeat with an alarm) that works with Google, Apple or Outlook calendar.
+7. **Install as an app:** a web app manifest and icons let the browser install VayuTula on the home screen; an install button appears where the browser offers it.
+8. **Delete my data** clears everything VayuTula stored on the device. There are no accounts and no database. The footer repeats, word for word from the health library, that this is not medical advice and to see a doctor for symptoms, and says what leaves the device. Unknown pages and errors show a friendly page in the chosen language.
 
 Screenshots of each step are added with the final polish (R7).
 
@@ -109,6 +111,8 @@ Screenshots of each step are added with the final polish (R7).
 - The forecast keeps every hour from local midnight today (at least 96 h, agreed in R1); the engine uses the 48 h from now.
 
 ### Config values
+
+Eight values were checked against the publisher's own page on 2026-11-24: IOCL LPG and petrol, IGL PNG, IPCC LPG CO₂, the CEA grid factor and the Philips AC1711/61 spec. [docs/SOURCES_SPOTCHECK.md](docs/SOURCES_SPOTCHECK.md) lists each one with its link, the old and new value, and what could not be confirmed.
 
 Every config value with its unit, source and status. All are **provisional** until a person checks them against a primary source (see `docs/CHECKPOINT_B.md`). The UI shows a "Provisional" badge on any number that depends on one. Regenerate with `node scripts/assumptions.mjs`.
 
@@ -364,8 +368,8 @@ npm run dev
 | Engine | Steady state, purifier and airing effects, out-of-range inputs, hand-calculated Tula values, ₹ equal to config, 1,000-home free-first property test, 48 h × 6 rooms under 50 ms, time windows, nudge slots and weekly hours | `tests/engine/` (line coverage above 99%) |
 | AI | Validators, number extraction, health and symptom checks, English, Hindi, nonsense and "ignore previous instructions" inputs, retry then fallback, model fallback, thinking-level retry | `tests/ai/` (100% line coverage on `ai/`) |
 | API routes | Input validation, body limits, rate limits, provider failures, plan cache, no user data in logs | `tests/api/` |
-| UI | Forecast, chat setup, form, today's plan, why panel, nudge, delete my data, English and Hindi | `tests/ui/` (jsdom) |
-| End to end | 360 px phone: forecast search, chat setup in Hindi, form setup → plan → why panel, axe WCAG 2.1 AA checks on home (with an open why panel), setup (chat and form) and the Hindi home | `tests/e2e/` (Playwright + `@axe-core/playwright`) |
+| UI | Forecast, chat setup, form, today's plan, why panel, ticks and Today's balance (daily reset), calendar reminder, install button, footer statements, 404 and error pages, nudge, delete my data, English and Hindi | `tests/ui/` (jsdom) |
+| End to end | 360 px phone: forecast search, chat setup in Hindi, form setup → plan → why panel → tick a step (survives reload), manifest and icons, friendly 404, axe WCAG 2.1 AA checks on home (with an open why panel), setup (chat and form) and the Hindi home | `tests/e2e/` (Playwright + `@axe-core/playwright`) |
 
 External services are always mocked in tests: no test calls Open-Meteo or Gemini. CI runs lint, format check, typecheck, unit tests with coverage thresholds, build, first-load JS budget, dependency audit, Playwright and the repo-size check on every push.
 
@@ -386,6 +390,7 @@ Vercel, from `main`. Set `GEMINI_API_KEY` (and optionally `GEMINI_MODEL`, `GEMIN
 
 - English / Hindi toggle sets `<html lang>`; every UI string comes from `src/i18n/` (a lint rule blocks hard-coded text in components).
 - Visible focus outline; 44 px minimum touch targets; every input has a label; the why panel is a button with `aria-expanded`.
+- Ticks are buttons with `aria-pressed`; Today's balance shows its totals as text in an `aria-live` region (the tipping beam is decorative).
 - Every value is shown as text, never by colour alone; plan, forecast and chat updates are announced with `aria-live`.
 - Works at 360 px with no sideways scrolling (tested); axe finds no WCAG 2.1 A or AA violations on the tested pages.
 
