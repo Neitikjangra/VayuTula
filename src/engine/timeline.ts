@@ -1,10 +1,10 @@
-import type { Forecast, HourRange } from '@/domain';
+import { BREATHE_IN_HOURS, type Forecast, type HourRange } from '@/domain';
 
 const HOUR_MS = 3_600_000;
 /** FR-3: indoor levels are simulated 48 h ahead. */
 export const HORIZON_HOURS = 48;
 /** Breathe-in pan: exposure over the next 24 h. */
-export const EXPOSURE_HOURS = 24;
+export const EXPOSURE_HOURS = BREATHE_IN_HOURS;
 
 /** The simulated hours: UTC times, outdoor PM2.5 and local clock hour for each. */
 export interface Timeline {

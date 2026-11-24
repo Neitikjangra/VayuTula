@@ -4,6 +4,7 @@ export * from './config';
 export * from './forecast';
 export * from './geo';
 export * from './intake';
+export * from './plan';
 export * from './profile';
 export * from './query';
 export * from './tula';
