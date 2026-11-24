@@ -70,6 +70,9 @@ describe("today's plan (FR-6)", () => {
         })),
       });
     await renderPlan();
+    // The engine's plan shows first; wait for the AI plan to replace it.
+    await screen.findAllByText('AI-written reason');
+    expect(screen.queryByText('Adding AI-written reasons…')).toBeNull();
     const cards = await planCards();
     expect(cards).toHaveLength(3);
     expect(within(cards[0]!).getByText('AI-written reason')).toBeTruthy();
@@ -128,8 +131,10 @@ describe("today's plan (FR-6)", () => {
         items: ids.map((actionId) => ({ actionId, whyText: 'Good step.' })),
       });
     await renderPlan();
+    await screen.findAllByText('Good step.');
     cleanup();
     await renderPlan();
+    await screen.findAllByText('Good step.');
     expect(sent).toHaveLength(1);
     expect(await planCards()).toHaveLength(3);
   });
