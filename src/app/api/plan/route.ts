@@ -4,7 +4,7 @@ import { TtlCache } from '@/data';
 import { PlanRequestSchema, type PlanRequest, type PlanResponse } from '@/domain';
 import { NO_STORE, aiRateLimiter, jsonError, logFailure, rateLimited, readJsonBody } from '@/lib';
 
-/** Vercel: allow two model calls of up to 8 s each, so a slow AI never drops the connection. */
+/** Vercel: above the 20 s AI budget (AI_BUDGET_MS), so a slow AI never drops the connection. */
 export const maxDuration = 30;
 
 const MAX_BODY_BYTES = 16_384;

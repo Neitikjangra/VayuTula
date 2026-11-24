@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { AiError, type GenerateJson, type JsonRequest } from '@/ai/client';
+import { AI_BUDGET_MS, AiError, type GenerateJson, type JsonRequest } from '@/ai/client';
 import { runIntake } from '@/ai/intake';
 import { INTAKE_SYSTEM } from '@/ai/prompts/intake';
 import type { IntakeRequest } from '@/domain';
@@ -202,6 +202,15 @@ describe('runIntake() with a mocked model (FR-1)', () => {
 
   it('asks the model to record the household size', () => {
     expect(INTAKE_SYSTEM).toContain('householdSize');
+  });
+
+  it('shares one deadline across the retry, within the time budget', async () => {
+    const { generate, calls } = model({ nope: true }, englishReply);
+    const before = Date.now();
+    await runIntake(request(), generate);
+    expect(calls).toHaveLength(2);
+    expect(calls[0]!.deadline).toBe(calls[1]!.deadline);
+    expect(calls[0]!.deadline! - before).toBeLessThanOrEqual(AI_BUDGET_MS + 50);
   });
 
   it('stops after 6 questions', async () => {

@@ -7,7 +7,7 @@ import {
   type IntakeRequest,
   type NextField,
 } from '@/domain';
-import { generateJson, isUnavailable, type GenerateJson } from './client';
+import { aiDeadline, generateJson, isUnavailable, type GenerateJson } from './client';
 import { INTAKE_JSON_SCHEMA, INTAKE_SYSTEM, buildIntakePrompt, retryNote } from './prompts/intake';
 import { validateIntakeOutput, type IntakeModelOutput } from './validators';
 
@@ -65,6 +65,7 @@ export async function runIntake(
   const prompt = buildIntakePrompt({ message: req.message, facts: req.facts, missing, lang });
   let note = '';
   let lastError: unknown = new Error('no attempt');
+  const deadline = aiDeadline();
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const raw = await generate({
@@ -72,6 +73,7 @@ export async function runIntake(
         user: prompt + note,
         schema: INTAKE_JSON_SCHEMA,
         maxOutputTokens: MAX_OUTPUT_TOKENS,
+        deadline,
       });
       const checked = validateIntakeOutput(raw, ctx);
       if (checked.ok) return { ok: true, value: finalize(checked.value, req, lang) };

@@ -17,6 +17,9 @@ const {
   DEFAULT_FALLBACK_MODEL,
   COOL_DOWN_MS,
   OVERLOAD_RETRY_MS,
+  AI_BUDGET_MS,
+  AI_TIMEOUT_MS,
+  MIN_CALL_MS,
   generateJson,
   modelsToTry,
   resetModelHealth,
@@ -127,6 +130,39 @@ describe('generateJson()', () => {
   it('lists each model once', () => {
     vi.stubEnv('GEMINI_FALLBACK_MODEL', 'main-model');
     expect(modelsToTry()).toEqual(['main-model']);
+  });
+});
+
+describe('time budget (found live: chained retries ran past the 30 s function limit)', () => {
+  it('fits every attempt into one budget below the 25 s client wait', () => {
+    expect(AI_BUDGET_MS).toBeLessThan(25_000);
+    expect(AI_TIMEOUT_MS).toBeLessThanOrEqual(AI_BUDGET_MS);
+  });
+
+  it('makes no call once the deadline is too close', async () => {
+    generateContent.mockResolvedValue({ text: '{}' });
+    const deadline = Date.now() + MIN_CALL_MS - 1;
+    await expect(generateJson({ ...request, deadline })).rejects.toMatchObject({ kind: 'timeout' });
+    expect(generateContent).not.toHaveBeenCalled();
+  });
+
+  it('gives a call only the time left before the deadline', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    generateContent.mockResolvedValue({ text: '{}' });
+    const timeout = vi.spyOn(AbortSignal, 'timeout');
+    await generateJson({ ...request, deadline: Date.now() + 3000 });
+    expect(timeout).toHaveBeenCalledWith(3000);
+  });
+
+  it('stops moving on to other models when the budget is spent', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    const deadline = Date.now() + 5000;
+    generateContent.mockImplementationOnce(async () => {
+      vi.setSystemTime(deadline);
+      throw apiError(429);
+    });
+    await expect(generateJson({ ...request, deadline })).rejects.toMatchObject({ kind: 'timeout' });
+    expect(generateContent).toHaveBeenCalledTimes(1);
   });
 });
 

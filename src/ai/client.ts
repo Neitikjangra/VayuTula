@@ -7,6 +7,18 @@ export const DEFAULT_MODEL = 'gemini-3.8-flash';
 export const DEFAULT_FALLBACK_MODEL = 'gemini-3.5-flash-lite';
 /** Every external call times out after 8 s (PRD Section 7). */
 export const AI_TIMEOUT_MS = 8000;
+/**
+ * All model attempts for one request (fallback model, retries) share this budget, so a reply or
+ * a clean failure always comes before the 25 s client wait and the 30 s function limit.
+ */
+export const AI_BUDGET_MS = 20_000;
+/** A call with less time than this left is not started. */
+export const MIN_CALL_MS = 1500;
+
+/** The deadline for a request started now. */
+export function aiDeadline(now: number = Date.now()): number {
+  return now + AI_BUDGET_MS;
+}
 /** Low temperature for repeatable extraction (PRD 6: ≤ 0.3). */
 export const AI_TEMPERATURE = 0.2;
 
@@ -51,6 +63,8 @@ export interface JsonRequest {
   /** JSON Schema the reply must follow. */
   schema: Record<string, unknown>;
   maxOutputTokens: number;
+  /** Epoch ms after which no model is called; defaults to now + AI_BUDGET_MS. */
+  deadline?: number;
 }
 
 /** Calls the model and returns parsed JSON; injectable so tests never call the network. */
@@ -112,12 +126,21 @@ function toAiError(error: unknown, signal: AbortSignal): AiError {
   return new AiError(TRY_NEXT_MODEL.has(error.status) ? 'unavailable' : 'upstream');
 }
 
+type Timed = JsonRequest & { deadline: number };
+
+/** Time a call may take: 8 s, or less when the request's deadline is closer. */
+function callTimeout(deadline: number): number {
+  const left = deadline - Date.now();
+  if (left < MIN_CALL_MS) throw new AiError('timeout');
+  return Math.min(AI_TIMEOUT_MS, left);
+}
+
 async function callModel(
   model: string,
-  request: JsonRequest,
+  request: Timed,
   thinking: boolean,
 ): Promise<string | undefined> {
-  const signal = AbortSignal.timeout(AI_TIMEOUT_MS);
+  const signal = AbortSignal.timeout(callTimeout(request.deadline));
   try {
     const response = await getClient().models.generateContent({
       model,
@@ -139,7 +162,7 @@ async function callModel(
 }
 
 /** One model: low thinking first; if the model rejects that setting, once more without it. */
-async function askModel(model: string, request: JsonRequest): Promise<string | undefined> {
+async function askModel(model: string, request: Timed): Promise<string | undefined> {
   try {
     return await callModel(model, request, true);
   } catch (error) {
@@ -152,7 +175,7 @@ async function askModel(model: string, request: JsonRequest): Promise<string | u
 const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** One model; a "high demand" reply is retried once after a short pause. */
-async function askWithRetry(model: string, request: JsonRequest): Promise<string | undefined> {
+async function askWithRetry(model: string, request: Timed): Promise<string | undefined> {
   try {
     return await askModel(model, request);
   } catch (error) {
@@ -163,9 +186,10 @@ async function askWithRetry(model: string, request: JsonRequest): Promise<string
 }
 
 /** Raw text from the first model that answers; quota, overload or slowness moves on. */
-async function firstAnswer(request: JsonRequest): Promise<string | undefined> {
+async function firstAnswer(request: Timed): Promise<string | undefined> {
   if (!process.env.GEMINI_API_KEY) throw new AiError('no_key');
   for (const model of healthyModels()) {
+    if (request.deadline - Date.now() < MIN_CALL_MS) throw new AiError('timeout');
     try {
       return await askWithRetry(model, request);
     } catch (error) {
@@ -178,7 +202,7 @@ async function firstAnswer(request: JsonRequest): Promise<string | undefined> {
 
 /** Server-only Gemini call: JSON-schema output, temperature 0.2, token cap, 8 s timeout per model. */
 export const generateJson: GenerateJson = async (request) => {
-  const text = await firstAnswer(request);
+  const text = await firstAnswer({ ...request, deadline: request.deadline ?? aiDeadline() });
   if (!text) throw new AiError('empty');
   try {
     return JSON.parse(text) as unknown;

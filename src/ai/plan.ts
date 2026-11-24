@@ -1,5 +1,5 @@
 import type { PlanRequest, PlanResponse } from '@/domain';
-import { generateJson, isUnavailable, type GenerateJson } from './client';
+import { aiDeadline, generateJson, isUnavailable, type GenerateJson } from './client';
 import { templatePlan } from './fallback';
 import { retryNote } from './prompts/intake';
 import { PLAN_JSON_SCHEMA, PLAN_SYSTEM, buildPlanPrompt } from './prompts/plan';
@@ -25,6 +25,7 @@ export async function runPlanWithReason(
   const ctx = { candidates: req.candidates, lang: req.lang };
   let note = '';
   let error: unknown = new Error('no attempt');
+  const deadline = aiDeadline();
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const raw = await generate({
@@ -32,6 +33,7 @@ export async function runPlanWithReason(
         user: prompt + note,
         schema: PLAN_JSON_SCHEMA,
         maxOutputTokens: MAX_OUTPUT_TOKENS,
+        deadline,
       });
       const checked = validatePlanOutput(raw, ctx);
       if (checked.ok) return { plan: { source: 'ai', items: checked.value.items }, error: null };
