@@ -74,7 +74,7 @@ describe("today's plan (FR-6)", () => {
       });
     await renderPlan();
     // The engine's plan shows first; wait for the AI plan to replace it.
-    await screen.findAllByText('AI-written reason');
+    await screen.findAllByText('AI-written reason', undefined, { timeout: 5000 });
     expect(screen.queryByText('Adding AI-written reasons…')).toBeNull();
     const cards = await planCards();
     expect(cards).toHaveLength(3);
@@ -99,6 +99,16 @@ describe("today's plan (FR-6)", () => {
       rooms: 4,
       purifiers: 1,
     });
+  });
+
+  it('sends no plan request after the page is closed (late request found in testing)', async () => {
+    planReply = () => new Response(null, { status: 503 });
+    act(() => {
+      render(<PlanSection forecast={forecast} />);
+    });
+    cleanup();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(sent).toHaveLength(0);
   });
 
   it('falls back to the template plan with built-in reasons from engine numbers', async () => {

@@ -15,15 +15,16 @@ export function usePlan(
 ): { plan: PlanResponse; writing: boolean } {
   const [result, setResult] = useState<{ for: PlanData; plan: PlanResponse } | null>(null);
   useEffect(() => {
-    let cancelled = false;
+    // Cancelled when the page closes or the inputs change: no late request, no stale result.
+    const abort = new AbortController();
     void (async () => {
       const req = { ...data.request, profileHash: await profileHash(profile) };
-      const plan = cachedPlan(req) ?? (await fetchPlan(req)) ?? templatePlan(data.candidates);
-      if (!cancelled) setResult({ for: data, plan });
+      if (abort.signal.aborted) return;
+      const plan =
+        cachedPlan(req) ?? (await fetchPlan(req, abort.signal)) ?? templatePlan(data.candidates);
+      if (!abort.signal.aborted) setResult({ for: data, plan });
     })();
-    return () => {
-      cancelled = true;
-    };
+    return () => abort.abort();
   }, [profile, data]);
   const ready = result !== null && result.for === data;
   return { plan: ready ? result.plan : templatePlan(data.candidates), writing: !ready };

@@ -330,5 +330,17 @@
   "meter.note": "Breathe in counts the next 24 h; emit out and ₹ are per month if you keep these steps up.",
   "meter.perPerson": "Per person",
   "plan.markDone": "Mark as done",
-  "plan.isDone": "Done"
+  "plan.isDone": "Done",
+  "calendar.add": "Add a daily reminder to my calendar ({room})",
+  "calendar.title": "Switch on the purifier in {room}",
+  "calendar.body": "VayuTula plan: run the purifier in {room} from {from} to {to}, with doors and windows shut.",
+  "calendar.note": "Saves a calendar file. Open it to add the reminder to Google, Apple or Outlook calendar.",
+  "install.button": "Install VayuTula as an app",
+  "install.done": "VayuTula is installed. Open it from your home screen.",
+  "footer.privacy": "Your home details stay on this device. To write the plan, only counts and numbers are sent, never names. Your place is used only to fetch the air forecast.",
+  "status.notFoundHeading": "Page not found",
+  "status.notFoundBody": "This page does not exist. Your home and plan are safe on this device.",
+  "status.errorHeading": "Something went wrong",
+  "status.errorBody": "This page could not load. Your home and plan are still saved on this device. Please try again.",
+  "status.retry": "Try again"
 }

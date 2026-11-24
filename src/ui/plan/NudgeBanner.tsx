@@ -5,6 +5,7 @@ import type { Profile } from '@/domain';
 import type { PurifierSlot } from '@/engine/nudge';
 import { format, t, type Lang } from '@/i18n';
 import { formatNumber, hourLabel } from '../format';
+import { CalendarReminder } from './CalendarReminder';
 import { useNudge } from './useNudge';
 
 const BUTTON =
@@ -80,6 +81,8 @@ export function NudgeBanner({ lang, profile }: { lang: Lang; profile: Profile })
         {format(lang, 'nudge.weekly', { hours: formatNumber(nudge.weekly, lang) })}
       </p>
       <NotifyControl lang={lang} />
+      <CalendarReminder lang={lang} profile={profile} />
+      <p className="text-sm text-slate-700">{t(lang, 'calendar.note')}</p>
     </section>
   );
 }

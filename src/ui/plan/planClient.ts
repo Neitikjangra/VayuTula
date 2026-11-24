@@ -50,12 +50,16 @@ function remember(req: PlanRequest, plan: PlanResponse): void {
 }
 
 /** POST /api/plan; null on any failure (the caller then uses the template plan). */
-export async function fetchPlan(req: PlanRequest): Promise<PlanResponse | null> {
+export async function fetchPlan(
+  req: PlanRequest,
+  signal?: AbortSignal,
+): Promise<PlanResponse | null> {
   try {
     const response = await fetch('/api/plan', {
       method: 'POST',
       headers: { 'content-type': 'application/json', accept: 'application/json' },
       body: JSON.stringify(req),
+      signal,
     });
     if (!response.ok) return null;
     const parsed = PlanResponseSchema.safeParse(await response.json());

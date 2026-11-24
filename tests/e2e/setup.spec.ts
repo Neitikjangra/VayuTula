@@ -36,6 +36,16 @@ test('setup with the form, then today’s plan and its why panel (R4)', async ({
     'Particles settling indoors (per hour)',
   );
 
+  const meter = page.getByRole('region', { name: "Today's balance" });
+  await expect(meter.getByText(/^0 of \d steps done today$/)).toBeVisible();
+  await plan.getByRole('button', { name: 'Mark as done' }).first().click();
+  await expect(meter.getByText(/^1 of \d steps done today$/)).toBeVisible();
+  await page.reload();
+  await expect(meter.getByText(/^1 of \d steps done today$/)).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: /^Add a daily reminder to my calendar/ }),
+  ).toBeVisible();
+
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - window.innerWidth,
   );
