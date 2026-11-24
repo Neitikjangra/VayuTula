@@ -12,6 +12,7 @@ import { validateIntakeOutput, type IntakeModelOutput } from './validators';
 
 const MAX_OUTPUT_TOKENS = 1200;
 const DEVANAGARI = /[ऀ-ॿ]/;
+const HAS_LETTER = /\p{L}/u;
 
 export interface IntakeReply {
   profileDelta: IntakeFacts;
@@ -48,6 +49,13 @@ export async function runIntake(
 ): Promise<IntakeResult> {
   const lang = replyLang(req);
   const missing = missingFields(req.answered);
+  // No words at all (e.g. "???"): nothing to extract, and models may invent facts. Ask instead.
+  if (!HAS_LETTER.test(req.message)) {
+    return {
+      ok: true,
+      value: { profileDelta: {}, nextField: missing[0] ?? 'done', question: null, lang },
+    };
+  }
   const ctx = { missing, lang, knownRooms: (req.facts.rooms ?? []).map((r) => r.name) };
   const prompt = buildIntakePrompt({ message: req.message, facts: req.facts, missing, lang });
   let note = '';
