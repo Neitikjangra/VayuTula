@@ -2,7 +2,7 @@
 
 > A daily, room-by-room smog plan that weighs what your family **breathes in**, what your home **emits out**, and what each step costs or saves in **₹**.
 
-_Status: Round R2 (engine). Live at <https://vayutula.vercel.app>. Sections below are filled in as each round lands._
+_Status: Round R3 (AI intake). Live at <https://vayutula.vercel.app>. Sections below are filled in as each round lands._
 
 ## 1. Chosen vertical
 
@@ -54,7 +54,20 @@ Indoor sources (`engine/sources.ts`): cooking goes to the kitchen (a share leaks
 
 ### AI guardrails
 
-_R3–R4._
+Principle: **numbers from code, words from the model.** Gemini (Flash-class, via the official `@google/genai` SDK, server-only) is used to understand people and write for them; it never calculates.
+
+| Guardrail | How | Code | Test |
+| --- | --- | --- | --- |
+| Structured output | JSON-schema response, then a Zod schema and checks in `ai/validators.ts`; one retry with the errors, then the fallback (setup: the manual form) | `ai/intake.ts`, `ai/validators.ts` | `tests/ai/intake.test.ts`, `tests/ai/validators.test.ts` |
+| AI never computes | The model copies stated numbers (e.g. "110 sq ft" → `areaValue: 110, areaUnit: "sqft"`); unit conversion, default sizes, purifier matching and occupancy hours are code with config values | `engine/intakeMerge.ts` | `tests/engine/intakeMerge.test.ts` |
+| Injection safety | Fixed server-side system prompt; user text wrapped in `<user_text>` with `<` and `>` neutralised so it cannot close the wrapper; the model is told text inside is data | `ai/prompts/intake.ts` | "ignore previous instructions" cases |
+| Health | No diagnosis, medicine or dosage in AI text (blocklist, English and Hindi); a symptom mention shows the fixed consult-a-doctor sentence from `health-library.json` | `ai/health.ts` | `tests/ai/health.test.ts` |
+| Topic control | The next question must be about a topic still missing; code picks the topic and stops after 6 questions | `ai/intake.ts` | cap and topic tests |
+| Cost and abuse | Temperature 0.2, output-token cap, minimal thinking, 8 s timeout per model call, 20 AI requests per minute per IP | `ai/client.ts`, `lib/rateLimit.ts` | `tests/ai/client.test.ts`, `tests/api/intake.test.ts` |
+| Resilience | If the main model is over quota or overloaded (HTTP 429/503/404), the client tries `GEMINI_FALLBACK_MODEL` (default `gemini-3.5-flash-lite`); if that fails too, the app keeps working with the manual form | `ai/client.ts` | fallback-model tests |
+| Transparency | AI-written questions carry an "AI-written" label; built-in questions do not | `ui/setup/ChatLog.tsx` | `tests/ui/intake.test.tsx` |
+
+Prompts are versioned constants (`INTAKE_PROMPT_VERSION = "intake-v1"`) with English and Hindi worked examples.
 
 ## 4. How it works
 
@@ -126,6 +139,14 @@ Every config value with its unit, source and status. All are **provisional** unt
 | `factors.transport.walkCycle.co2KgPerKm` | 0 | kg CO₂/km | TODO | provisional |
 | `factors.transport.walkCycle.pmGPerKm` | 0 | g PM2.5/km | TODO | provisional |
 | `factors.devices.vaporiserWatts` | 5 | W | TODO | provisional |
+| `factors.intakeDefaults.roomAreaSmall` | 9 | m² for a room described as small | TODO | provisional |
+| `factors.intakeDefaults.roomAreaMedium` | 12 | m² for a room of unstated size | TODO | provisional |
+| `factors.intakeDefaults.roomAreaLarge` | 16 | m² for a room described as large | TODO | provisional |
+| `factors.intakeDefaults.sleepAdult` | 22, 7 | local hours asleep (from, until) for adults and elders | TODO | provisional |
+| `factors.intakeDefaults.sleepChild` | 21, 7 | local hours asleep (from, until) for children | TODO | provisional |
+| `factors.intakeDefaults.dayAtHomeFrom` | 7 | local hour people at home all day move to the living room | TODO | provisional |
+| `factors.intakeDefaults.eveningFrom` | 18 | local hour people away in the day are back home | TODO | provisional |
+| `factors.intakeDefaults.mealHours` | 8, 20, 13, 17, 11, 15 | default cooking hours, in order of meals | TODO | provisional |
 | `tariffs.electricityPerKwh` | 6.5 | ₹/kWh (Delhi domestic, marginal slab) | TODO | provisional |
 | `tariffs.lpgPerCylinder` | 853 | ₹ per 14.2 kg cylinder (Delhi) | TODO | provisional |
 | `tariffs.lpgCylinderKg` | 14.2 | kg/cylinder | TODO | provisional |
@@ -325,7 +346,11 @@ _Vercel — R0 checkpoint._
 ### Security
 
 - Security headers on every route: CSP, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options` (`src/lib/securityHeaders.ts`).
-- Secrets only in server environment variables; `.env*` is git-ignored, `.env.example` is committed.
+- Secrets only in server environment variables; `.env*` is git-ignored, `.env.example` is committed. The Gemini client imports `server-only`, so it can never ship to the browser.
+- Every API input is validated with Zod; the intake body is capped at 32 KB and the message at 2,000 characters.
+- Rate limits: 20 AI requests per minute per IP on `/api/intake`; 60 per minute on `/api/forecast` and `/api/geocode` so they cannot be used as free relays. The limiter is in memory per server instance; production with several instances needs a shared store (e.g. Redis).
+- Logs record only a failure category, never user text, locations or keys (tested).
+- Only the rounded location (2 decimals) leaves the browser for the forecast; the profile stays in the browser.
 
 ### Accessibility
 
