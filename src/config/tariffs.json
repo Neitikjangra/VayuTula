@@ -1,0 +1,80 @@
+{
+  "electricityPerKwh": {
+    "value": 6.5,
+    "unit": "₹/kWh (Delhi domestic, marginal slab)",
+    "source": "TODO",
+    "verifiedOn": null
+  },
+  "lpgPerCylinder": {
+    "value": 853,
+    "unit": "₹ per 14.2 kg cylinder (Delhi)",
+    "source": "TODO",
+    "verifiedOn": null
+  },
+  "lpgCylinderKg": {
+    "value": 14.2,
+    "unit": "kg/cylinder",
+    "source": "TODO",
+    "verifiedOn": null
+  },
+  "pngPerM3": {
+    "value": 48.6,
+    "unit": "₹/SCM (Delhi)",
+    "source": "TODO",
+    "verifiedOn": null
+  },
+  "biomassPerKg": {
+    "value": 0,
+    "unit": "₹/kg (assumed collected)",
+    "source": "TODO",
+    "verifiedOn": null
+  },
+  "petrolPerLitre": {
+    "value": 94.77,
+    "unit": "₹/L (Delhi)",
+    "source": "TODO",
+    "verifiedOn": null
+  },
+  "carKmPerLitre": {
+    "value": 15,
+    "unit": "km/L",
+    "source": "TODO",
+    "verifiedOn": null
+  },
+  "twoWheelerKmPerLitre": {
+    "value": 45,
+    "unit": "km/L",
+    "source": "TODO",
+    "verifiedOn": null
+  },
+  "busFarePerKm": {
+    "value": 1.5,
+    "unit": "₹/km",
+    "source": "TODO",
+    "verifiedOn": null
+  },
+  "metroFarePerKm": {
+    "value": 2.5,
+    "unit": "₹/km",
+    "source": "TODO",
+    "verifiedOn": null
+  },
+  "coilRupees": {
+    "value": 4,
+    "unit": "₹/coil",
+    "source": "TODO",
+    "verifiedOn": null
+  },
+  "vaporiserRefillPerNight": {
+    "value": 3,
+    "unit": "₹/night",
+    "source": "TODO",
+    "verifiedOn": null
+  },
+  "incensePerStick": {
+    "value": 1,
+    "unit": "₹/stick",
+    "source": "TODO",
+    "verifiedOn": null
+  }
+}

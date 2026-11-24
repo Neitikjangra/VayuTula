@@ -1,0 +1,654 @@
+{
+  "actions": [
+    {
+      "id": "run-purifier-when-occupied",
+      "category": "indoor",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 1,
+      "appliesWhen": [
+        {
+          "fact": "flag",
+          "name": "hasPurifier",
+          "is": true
+        }
+      ],
+      "modifies": {
+        "type": "runPurifier"
+      },
+      "citation": {
+        "source": "https://www.theigc.org/sites/default/files/2025-05/Mattsson-et-al-Policy-Brief-May-2025.pdf",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "run-purifier-bedroom-sleep",
+      "category": "indoor",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 1,
+      "appliesWhen": [
+        {
+          "fact": "flag",
+          "name": "hasPurifier",
+          "is": true
+        }
+      ],
+      "modifies": {
+        "type": "runPurifier",
+        "roomKind": "bedroom"
+      },
+      "citation": {
+        "source": "https://www.theigc.org/sites/default/files/2025-05/Mattsson-et-al-Policy-Brief-May-2025.pdf",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "air-at-cleanest-hour",
+      "category": "indoor",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 1,
+      "appliesWhen": [],
+      "modifies": {
+        "type": "airAtCleanestHour"
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "air-kitchen-after-meals",
+      "category": "indoor",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 1,
+      "appliesWhen": [
+        {
+          "fact": "flag",
+          "name": "hasKitchen",
+          "is": true
+        },
+        {
+          "fact": "count",
+          "name": "mealsPerDay",
+          "gte": 1
+        }
+      ],
+      "modifies": {
+        "type": "airKitchenAfterMeals"
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "close-kitchen-door",
+      "category": "indoor",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 1,
+      "appliesWhen": [
+        {
+          "fact": "flag",
+          "name": "hasKitchen",
+          "is": true
+        },
+        {
+          "fact": "flag",
+          "name": "kitchenDoor",
+          "is": false
+        },
+        {
+          "fact": "count",
+          "name": "mealsPerDay",
+          "gte": 1
+        }
+      ],
+      "modifies": {
+        "type": "closeKitchenDoor"
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "cook-with-lid",
+      "category": "indoor",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 1,
+      "appliesWhen": [
+        {
+          "fact": "count",
+          "name": "mealsPerDay",
+          "gte": 1
+        }
+      ],
+      "modifies": {
+        "type": "scaleCooking",
+        "factorKey": "lidFactor"
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "skip-incense",
+      "category": "indoor",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 1,
+      "appliesWhen": [
+        {
+          "fact": "count",
+          "name": "incensePerDay",
+          "gte": 1
+        }
+      ],
+      "modifies": {
+        "type": "setIncense",
+        "perDay": 0
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "one-incense-stick",
+      "category": "indoor",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 1,
+      "appliesWhen": [
+        {
+          "fact": "count",
+          "name": "incensePerDay",
+          "gte": 2
+        }
+      ],
+      "modifies": {
+        "type": "setIncense",
+        "perDay": 1
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "smoke-outside",
+      "category": "indoor",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 2,
+      "appliesWhen": [
+        {
+          "fact": "flag",
+          "name": "smokerIndoors",
+          "is": true
+        }
+      ],
+      "modifies": {
+        "type": "smokeOutside"
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "seal-window-gaps",
+      "category": "indoor",
+      "costTier": 1,
+      "oneOffRupees": {
+        "value": 500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 2,
+      "appliesWhen": [
+        {
+          "fact": "flag",
+          "name": "hasLeakyWindow",
+          "is": true
+        }
+      ],
+      "modifies": {
+        "type": "sealWindows"
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "fit-exhaust-fan",
+      "category": "indoor",
+      "costTier": 1,
+      "oneOffRupees": {
+        "value": 1800,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 2,
+      "appliesWhen": [
+        {
+          "fact": "flag",
+          "name": "hasKitchen",
+          "is": true
+        },
+        {
+          "fact": "flag",
+          "name": "chimney",
+          "is": false
+        },
+        {
+          "fact": "count",
+          "name": "mealsPerDay",
+          "gte": 1
+        }
+      ],
+      "modifies": {
+        "type": "addChimney"
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "diy-box-fan-filter",
+      "category": "indoor",
+      "costTier": 1,
+      "oneOffRupees": {
+        "value": 2000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 2,
+      "appliesWhen": [
+        {
+          "fact": "flag",
+          "name": "hasBedroomWithoutPurifier",
+          "is": true
+        }
+      ],
+      "modifies": {
+        "type": "addPurifier",
+        "purifierId": "diy-box-fan",
+        "roomKind": "bedroom"
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "buy-purifier-bedroom",
+      "category": "indoor",
+      "costTier": 2,
+      "oneOffRupees": {
+        "value": 9000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 1,
+      "appliesWhen": [
+        {
+          "fact": "flag",
+          "name": "hasBedroomWithoutPurifier",
+          "is": true
+        }
+      ],
+      "modifies": {
+        "type": "addPurifier",
+        "purifierId": "generic-medium",
+        "roomKind": "bedroom"
+      },
+      "citation": {
+        "source": "https://www.theigc.org/sites/default/files/2025-05/Mattsson-et-al-Policy-Brief-May-2025.pdf",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "buy-purifier-living",
+      "category": "indoor",
+      "costTier": 2,
+      "oneOffRupees": {
+        "value": 9000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 1,
+      "appliesWhen": [
+        {
+          "fact": "flag",
+          "name": "hasLivingWithoutPurifier",
+          "is": true
+        }
+      ],
+      "modifies": {
+        "type": "addPurifier",
+        "purifierId": "generic-medium",
+        "roomKind": "living"
+      },
+      "citation": {
+        "source": "https://www.theigc.org/sites/default/files/2025-05/Mattsson-et-al-Policy-Brief-May-2025.pdf",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "metro-instead-of-car",
+      "category": "routine",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 2,
+      "appliesWhen": [
+        {
+          "fact": "commuteMode",
+          "in": ["car", "twoWheeler"]
+        },
+        {
+          "fact": "count",
+          "name": "commuteKmPerDay",
+          "gte": 3
+        }
+      ],
+      "modifies": {
+        "type": "setCommuteMode",
+        "mode": "metro"
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "bus-instead-of-car",
+      "category": "routine",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 2,
+      "appliesWhen": [
+        {
+          "fact": "commuteMode",
+          "in": ["car", "twoWheeler"]
+        },
+        {
+          "fact": "count",
+          "name": "commuteKmPerDay",
+          "gte": 3
+        }
+      ],
+      "modifies": {
+        "type": "setCommuteMode",
+        "mode": "bus"
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "carpool",
+      "category": "routine",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 2,
+      "appliesWhen": [
+        {
+          "fact": "commuteMode",
+          "in": ["car"]
+        }
+      ],
+      "modifies": {
+        "type": "scaleCommute",
+        "kmFactor": 0.5,
+        "daysLess": 0
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "combine-trips",
+      "category": "routine",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 1,
+      "appliesWhen": [
+        {
+          "fact": "commuteMode",
+          "in": ["car", "twoWheeler"]
+        }
+      ],
+      "modifies": {
+        "type": "scaleCommute",
+        "kmFactor": 0.9,
+        "daysLess": 0
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "walk-cycle-short-trips",
+      "category": "routine",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 3,
+      "appliesWhen": [
+        {
+          "fact": "commuteMode",
+          "in": ["car", "twoWheeler"]
+        },
+        {
+          "fact": "count",
+          "name": "commuteKmPerDay",
+          "lte": 6
+        }
+      ],
+      "modifies": {
+        "type": "setCommuteMode",
+        "mode": "walkCycle"
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "work-from-home-one-day",
+      "category": "routine",
+      "costTier": 0,
+      "oneOffRupees": {
+        "value": 0,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 2,
+      "appliesWhen": [
+        {
+          "fact": "commuteMode",
+          "in": ["car", "twoWheeler", "bus", "metro"]
+        },
+        {
+          "fact": "count",
+          "name": "commuteDaysPerWeek",
+          "gte": 5
+        }
+      ],
+      "modifies": {
+        "type": "scaleCommute",
+        "kmFactor": 1,
+        "daysLess": 1
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "switch-to-induction",
+      "category": "alternative",
+      "costTier": 2,
+      "oneOffRupees": {
+        "value": 3000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 2,
+      "appliesWhen": [
+        {
+          "fact": "fuel",
+          "in": ["lpg", "png", "biomass"]
+        }
+      ],
+      "modifies": {
+        "type": "setFuel",
+        "fuel": "induction"
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "lpg-instead-of-biomass",
+      "category": "alternative",
+      "costTier": 2,
+      "oneOffRupees": {
+        "value": 3500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 2,
+      "appliesWhen": [
+        {
+          "fact": "fuel",
+          "in": ["biomass"]
+        }
+      ],
+      "modifies": {
+        "type": "setFuel",
+        "fuel": "lpg"
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "vaporiser-instead-of-coil",
+      "category": "alternative",
+      "costTier": 1,
+      "oneOffRupees": {
+        "value": 250,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "effort": 1,
+      "appliesWhen": [
+        {
+          "fact": "count",
+          "name": "coilNightsPerWeek",
+          "gte": 1
+        }
+      ],
+      "modifies": {
+        "type": "replaceCoil"
+      },
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    }
+  ]
+}

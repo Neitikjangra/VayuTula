@@ -1,0 +1,310 @@
+{
+  "airExchange": {
+    "leaky": {
+      "value": 1.5,
+      "unit": "1/h",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "average": {
+      "value": 0.8,
+      "unit": "1/h",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "sealed": {
+      "value": 0.3,
+      "unit": "1/h",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "airing": {
+      "value": 6,
+      "unit": "1/h",
+      "source": "TODO",
+      "verifiedOn": null
+    }
+  },
+  "penetration": {
+    "leaky": {
+      "value": 0.9,
+      "unit": "fraction",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "average": {
+      "value": 0.8,
+      "unit": "fraction",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "sealed": {
+      "value": 0.6,
+      "unit": "fraction",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "airing": {
+      "value": 1,
+      "unit": "fraction",
+      "source": "TODO",
+      "verifiedOn": null
+    }
+  },
+  "deposition": {
+    "value": 0.2,
+    "unit": "1/h",
+    "source": "TODO",
+    "verifiedOn": null
+  },
+  "emission": {
+    "cookingLpgPerMeal": {
+      "value": 20000,
+      "unit": "µg PM2.5 per meal-hour",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "cookingPngPerMeal": {
+      "value": 20000,
+      "unit": "µg PM2.5 per meal-hour",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "cookingInductionPerMeal": {
+      "value": 12000,
+      "unit": "µg PM2.5 per meal-hour",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "cookingBiomassPerMeal": {
+      "value": 300000,
+      "unit": "µg PM2.5 per meal-hour",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "incensePerStick": {
+      "value": 20000,
+      "unit": "µg PM2.5 per stick (burns 1 h)",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "coilPerNight": {
+      "value": 50000,
+      "unit": "µg PM2.5 per coil-night",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "cigarette": {
+      "value": 12000,
+      "unit": "µg PM2.5 per cigarette",
+      "source": "TODO",
+      "verifiedOn": null
+    }
+  },
+  "behaviour": {
+    "chimneyCapture": {
+      "value": 0.5,
+      "unit": "fraction of cooking PM2.5 removed",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "kitchenLeakShare": {
+      "value": 0.3,
+      "unit": "fraction of kitchen PM2.5 reaching living room with door open",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "lidFactor": {
+      "value": 0.8,
+      "unit": "multiplier on cooking PM2.5 and fuel",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "cigarettesPerDayIndoors": {
+      "value": 5,
+      "unit": "cigarettes/day",
+      "source": "TODO",
+      "verifiedOn": null
+    }
+  },
+  "schedules": {
+    "incenseHours": {
+      "value": [7, 19],
+      "unit": "local hours",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "coilHours": {
+      "value": [21, 22, 23, 0, 1, 2, 3, 4],
+      "unit": "local hours",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "smokingHours": {
+      "value": [8, 13, 18, 20, 22],
+      "unit": "local hours",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "airingWindow": {
+      "value": [7, 18],
+      "unit": "first and last local hour for airing",
+      "source": "TODO",
+      "verifiedOn": null
+    }
+  },
+  "fuelUse": {
+    "lpgKgPerMeal": {
+      "value": 0.12,
+      "unit": "kg LPG/meal",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "pngM3PerMeal": {
+      "value": 0.14,
+      "unit": "m³ PNG/meal",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "inductionKwhPerMeal": {
+      "value": 0.9,
+      "unit": "kWh/meal",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "biomassKgPerMeal": {
+      "value": 2,
+      "unit": "kg/meal",
+      "source": "TODO",
+      "verifiedOn": null
+    }
+  },
+  "co2": {
+    "lpgKgPerKg": {
+      "value": 2.98,
+      "unit": "kg CO₂/kg LPG",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "pngKgPerM3": {
+      "value": 1.9,
+      "unit": "kg CO₂/m³ PNG",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "biomassKgPerKg": {
+      "value": 1.5,
+      "unit": "kg CO₂/kg biomass",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "gridKgPerKwh": {
+      "value": 0.71,
+      "unit": "kg CO₂/kWh",
+      "source": "TODO",
+      "verifiedOn": null
+    }
+  },
+  "pm": {
+    "gridGPerKwh": {
+      "value": 0.3,
+      "unit": "g PM2.5/kWh",
+      "source": "TODO",
+      "verifiedOn": null
+    }
+  },
+  "transport": {
+    "none": {
+      "co2KgPerKm": {
+        "value": 0,
+        "unit": "kg CO₂/km",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "pmGPerKm": {
+        "value": 0,
+        "unit": "g PM2.5/km",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    "car": {
+      "co2KgPerKm": {
+        "value": 0.17,
+        "unit": "kg CO₂/passenger-km",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "pmGPerKm": {
+        "value": 0.03,
+        "unit": "g PM2.5/passenger-km",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    "twoWheeler": {
+      "co2KgPerKm": {
+        "value": 0.05,
+        "unit": "kg CO₂/passenger-km",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "pmGPerKm": {
+        "value": 0.02,
+        "unit": "g PM2.5/passenger-km",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    "bus": {
+      "co2KgPerKm": {
+        "value": 0.03,
+        "unit": "kg CO₂/passenger-km",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "pmGPerKm": {
+        "value": 0.005,
+        "unit": "g PM2.5/passenger-km",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    "metro": {
+      "co2KgPerKm": {
+        "value": 0.02,
+        "unit": "kg CO₂/passenger-km",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "pmGPerKm": {
+        "value": 0.002,
+        "unit": "g PM2.5/passenger-km",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    "walkCycle": {
+      "co2KgPerKm": {
+        "value": 0,
+        "unit": "kg CO₂/km",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "pmGPerKm": {
+        "value": 0,
+        "unit": "g PM2.5/km",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    }
+  },
+  "devices": {
+    "vaporiserWatts": {
+      "value": 5,
+      "unit": "W",
+      "source": "TODO",
+      "verifiedOn": null
+    }
+  }
+}

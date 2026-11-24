@@ -1,0 +1,774 @@
+{
+  "models": [
+    {
+      "id": "philips-ac1215",
+      "brand": "Philips",
+      "model": "AC1215/20",
+      "cadr": {
+        "value": 270,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 50,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 2500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 12,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 9000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "philips-ac0920",
+      "brand": "Philips",
+      "model": "AC0920/20",
+      "cadr": {
+        "value": 250,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 25,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 2300,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 12,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 9000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "philips-ac1711",
+      "brand": "Philips",
+      "model": "AC1711/20",
+      "cadr": {
+        "value": 300,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 25,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 2500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 12,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 11000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "philips-ac2887",
+      "brand": "Philips",
+      "model": "AC2887/20",
+      "cadr": {
+        "value": 333,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 56,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 3500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 12,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 15000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "xiaomi-4",
+      "brand": "Xiaomi",
+      "model": "Smart Air Purifier 4",
+      "cadr": {
+        "value": 400,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 30,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 1500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 6,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 13000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "xiaomi-4-lite",
+      "brand": "Xiaomi",
+      "model": "Smart Air Purifier 4 Lite",
+      "cadr": {
+        "value": 360,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 33,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 1300,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 6,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 9000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "xiaomi-4-pro",
+      "brand": "Xiaomi",
+      "model": "Smart Air Purifier 4 Pro",
+      "cadr": {
+        "value": 500,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 50,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 2000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 6,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 16000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "honeywell-air-touch-v2",
+      "brand": "Honeywell",
+      "model": "Air Touch V2",
+      "cadr": {
+        "value": 250,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 45,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 2000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 12,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 8000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "honeywell-air-touch-i8",
+      "brand": "Honeywell",
+      "model": "Air Touch i8",
+      "cadr": {
+        "value": 300,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 55,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 2500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 12,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 12000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "coway-ap-1019c",
+      "brand": "Coway",
+      "model": "AP-1019C",
+      "cadr": {
+        "value": 238,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 32,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 2500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 12,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 11000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "coway-airmega-150",
+      "brand": "Coway",
+      "model": "Airmega 150",
+      "cadr": {
+        "value": 214,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 30,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 2200,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 12,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 9000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "sharp-fp-j30m",
+      "brand": "Sharp",
+      "model": "FP-J30M",
+      "cadr": {
+        "value": 180,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 45,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 3000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 24,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 9000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "blueair-411",
+      "brand": "Blueair",
+      "model": "Blue Pure 411",
+      "cadr": {
+        "value": 161,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 10,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 2500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 6,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 13000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "levoit-core-300",
+      "brand": "Levoit",
+      "model": "Core 300",
+      "cadr": {
+        "value": 240,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 45,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 2500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 6,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 9000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "levoit-core-400s",
+      "brand": "Levoit",
+      "model": "Core 400S",
+      "cadr": {
+        "value": 400,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 38,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 3500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 6,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 18000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "qubo-q200",
+      "brand": "Qubo",
+      "model": "Q200",
+      "cadr": {
+        "value": 200,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 40,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 1500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 6,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 7000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "samsung-ax40r3030",
+      "brand": "Samsung",
+      "model": "AX40R3030WM",
+      "cadr": {
+        "value": 400,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 40,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 3000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 12,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 15000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "dyson-tp07",
+      "brand": "Dyson",
+      "model": "Purifier Cool TP07",
+      "cadr": {
+        "value": 290,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 40,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 6000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 12,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 45000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "generic-small",
+      "brand": "Generic",
+      "model": "Small purifier",
+      "cadr": {
+        "value": 150,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 30,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 1500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 6,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 6000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "generic-medium",
+      "brand": "Generic",
+      "model": "Medium purifier",
+      "cadr": {
+        "value": 300,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 45,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 2500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 12,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 9000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "diy-box-fan",
+      "brand": "DIY",
+      "model": "Box fan with MERV-13 filter",
+      "cadr": {
+        "value": 150,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 55,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 800,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 4,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 2000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "unknown",
+      "brand": "Unknown",
+      "model": "Model not known",
+      "cadr": {
+        "value": 200,
+        "unit": "m³/h",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "watts": {
+        "value": 45,
+        "unit": "W",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterRupees": {
+        "value": 2500,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "filterLifeMonths": {
+        "value": 12,
+        "unit": "months",
+        "source": "TODO",
+        "verifiedOn": null
+      },
+      "priceRupees": {
+        "value": 9000,
+        "unit": "₹",
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    }
+  ]
+}

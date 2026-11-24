@@ -1,0 +1,34 @@
+{
+  "weights": {
+    "breatheIn": {
+      "value": 1,
+      "unit": "weight",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "breatheInVulnerable": {
+      "value": 2,
+      "unit": "weight",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "emitOut": {
+      "value": 1,
+      "unit": "weight",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "rupees": {
+      "value": 1,
+      "unit": "weight",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "effortPenalty": {
+      "value": 0.1,
+      "unit": "score per effort level",
+      "source": "TODO",
+      "verifiedOn": null
+    }
+  }
+}

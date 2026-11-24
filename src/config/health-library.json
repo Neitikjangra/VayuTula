@@ -1,0 +1,65 @@
+{
+  "values": {
+    "whoAnnualPm25": {
+      "value": 5,
+      "unit": "µg/m³ annual mean",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "who24hPm25": {
+      "value": 15,
+      "unit": "µg/m³ 24-hour mean",
+      "source": "TODO",
+      "verifiedOn": null
+    }
+  },
+  "statements": [
+    {
+      "id": "guideline-annual",
+      "en": "The WHO guideline for long-term PM2.5 exposure is an annual average of {value} µg/m³.",
+      "hi": "लंबे समय के PM2.5 संपर्क के लिए WHO का दिशानिर्देश सालाना औसत {value} µg/m³ है।",
+      "valueKey": "whoAnnualPm25",
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "guideline-24h",
+      "en": "The WHO guideline for a single day is a 24-hour average of {value} µg/m³.",
+      "hi": "एक दिन के लिए WHO का दिशानिर्देश 24 घंटे का औसत {value} µg/m³ है।",
+      "valueKey": "who24hPm25",
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "vulnerable-groups",
+      "en": "Children, older adults and people with heart or lung conditions are more affected by fine particles.",
+      "hi": "बच्चे, बुज़ुर्ग और दिल या फेफड़ों की बीमारी वाले लोग महीन कणों से ज़्यादा प्रभावित होते हैं।",
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "consult-doctor",
+      "en": "If anyone at home has breathing difficulty, chest pain or other symptoms, please consult a doctor.",
+      "hi": "अगर घर में किसी को सांस लेने में दिक्कत, सीने में दर्द या कोई और लक्षण हो, तो कृपया डॉक्टर से सलाह लें।",
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    },
+    {
+      "id": "not-medical-advice",
+      "en": "VayuTula gives general air-quality information. It is not medical advice.",
+      "hi": "वायुतुला हवा की गुणवत्ता की सामान्य जानकारी देता है। यह चिकित्सा सलाह नहीं है।",
+      "citation": {
+        "source": "TODO",
+        "verifiedOn": null
+      }
+    }
+  ]
+}
