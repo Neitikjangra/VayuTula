@@ -6,22 +6,22 @@
     "verifiedOn": null
   },
   "lpgPerCylinder": {
-    "value": 853,
+    "value": 942,
     "unit": "₹ per 14.2 kg cylinder (Delhi)",
-    "source": "TODO",
-    "verifiedOn": null
+    "source": "https://iocl.com/prices-of-petroleum-products",
+    "verifiedOn": "2026-11-24"
   },
   "lpgCylinderKg": {
     "value": 14.2,
     "unit": "kg/cylinder",
-    "source": "TODO",
-    "verifiedOn": null
+    "source": "https://iocl.com/prices-of-petroleum-products",
+    "verifiedOn": "2026-11-24"
   },
   "pngPerM3": {
-    "value": 48.6,
+    "value": 50.59,
     "unit": "₹/SCM (Delhi)",
-    "source": "TODO",
-    "verifiedOn": null
+    "source": "https://www.iglonline.net/cng-png-prices",
+    "verifiedOn": "2026-11-24"
   },
   "biomassPerKg": {
     "value": 0,
@@ -30,10 +30,10 @@
     "verifiedOn": null
   },
   "petrolPerLitre": {
-    "value": 94.77,
+    "value": 102.12,
     "unit": "₹/L (Delhi)",
-    "source": "TODO",
-    "verifiedOn": null
+    "source": "https://iocl.com/admin/img/UploadedFiles/PriceBuildup/Files/English/33bb8af791c64c60be402e4b264acbc6.pdf",
+    "verifiedOn": "2026-11-24"
   },
   "carKmPerLitre": {
     "value": 15,

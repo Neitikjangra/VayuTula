@@ -73,18 +73,18 @@
     {
       "id": "philips-ac1711",
       "brand": "Philips",
-      "model": "AC1711/20",
+      "model": "AC1711/61",
       "cadr": {
         "value": 300,
         "unit": "m³/h",
-        "source": "TODO",
-        "verifiedOn": null
+        "source": "https://www.philips.co.in/c-p/AC1711_61/1000-series-air-purifier-for-medium-rooms",
+        "verifiedOn": "2026-11-24"
       },
       "watts": {
-        "value": 25,
+        "value": 27,
         "unit": "W",
-        "source": "TODO",
-        "verifiedOn": null
+        "source": "https://www.philips.co.in/c-p/AC1711_61/1000-series-air-purifier-for-medium-rooms",
+        "verifiedOn": "2026-11-24"
       },
       "filterRupees": {
         "value": 2500,

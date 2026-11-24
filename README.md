@@ -143,10 +143,10 @@ Every config value with its unit, source and status. All are **provisional** unt
 | `factors.fuelUse.pngM3PerMeal` | 0.14 | m³ PNG/meal | TODO | provisional |
 | `factors.fuelUse.inductionKwhPerMeal` | 0.9 | kWh/meal | TODO | provisional |
 | `factors.fuelUse.biomassKgPerMeal` | 2 | kg/meal | TODO | provisional |
-| `factors.co2.lpgKgPerKg` | 2.98 | kg CO₂/kg LPG | TODO | provisional |
+| `factors.co2.lpgKgPerKg` | 2.985 | kg CO₂/kg LPG | https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/2_Volume2/V2_1_Ch1_Introduction.pdf | verified 2026-11-24 |
 | `factors.co2.pngKgPerM3` | 1.9 | kg CO₂/m³ PNG | TODO | provisional |
 | `factors.co2.biomassKgPerKg` | 1.5 | kg CO₂/kg biomass | TODO | provisional |
-| `factors.co2.gridKgPerKwh` | 0.71 | kg CO₂/kWh | TODO | provisional |
+| `factors.co2.gridKgPerKwh` | 0.727 | kg CO₂/kWh | https://cea.nic.in/api/cdm-report-version/view-pdf/en/76 | verified 2026-11-24 |
 | `factors.pm.gridGPerKwh` | 0.3 | g PM2.5/kWh | TODO | provisional |
 | `factors.transport.none.co2KgPerKm` | 0 | kg CO₂/km | TODO | provisional |
 | `factors.transport.none.pmGPerKm` | 0 | g PM2.5/km | TODO | provisional |
@@ -170,11 +170,11 @@ Every config value with its unit, source and status. All are **provisional** unt
 | `factors.intakeDefaults.eveningFrom` | 18 | local hour people away in the day are back home | TODO | provisional |
 | `factors.intakeDefaults.mealHours` | 8, 20, 13, 17, 11, 15 | default cooking hours, in order of meals | TODO | provisional |
 | `tariffs.electricityPerKwh` | 6.5 | ₹/kWh (Delhi domestic, marginal slab) | TODO | provisional |
-| `tariffs.lpgPerCylinder` | 853 | ₹ per 14.2 kg cylinder (Delhi) | TODO | provisional |
-| `tariffs.lpgCylinderKg` | 14.2 | kg/cylinder | TODO | provisional |
-| `tariffs.pngPerM3` | 48.6 | ₹/SCM (Delhi) | TODO | provisional |
+| `tariffs.lpgPerCylinder` | 942 | ₹ per 14.2 kg cylinder (Delhi) | https://iocl.com/prices-of-petroleum-products | verified 2026-11-24 |
+| `tariffs.lpgCylinderKg` | 14.2 | kg/cylinder | https://iocl.com/prices-of-petroleum-products | verified 2026-11-24 |
+| `tariffs.pngPerM3` | 50.59 | ₹/SCM (Delhi) | https://www.iglonline.net/cng-png-prices | verified 2026-11-24 |
 | `tariffs.biomassPerKg` | 0 | ₹/kg (assumed collected) | TODO | provisional |
-| `tariffs.petrolPerLitre` | 94.77 | ₹/L (Delhi) | TODO | provisional |
+| `tariffs.petrolPerLitre` | 102.12 | ₹/L (Delhi) | https://iocl.com/admin/img/UploadedFiles/PriceBuildup/Files/English/33bb8af791c64c60be402e4b264acbc6.pdf | verified 2026-11-24 |
 | `tariffs.carKmPerLitre` | 15 | km/L | TODO | provisional |
 | `tariffs.twoWheelerKmPerLitre` | 45 | km/L | TODO | provisional |
 | `tariffs.busFarePerKm` | 1.5 | ₹/km | TODO | provisional |
@@ -203,8 +203,8 @@ Every config value with its unit, source and status. All are **provisional** unt
 | `purifiers.philips-ac0920.filterRupees` | 2300 | ₹ | TODO | provisional |
 | `purifiers.philips-ac0920.filterLifeMonths` | 12 | months | TODO | provisional |
 | `purifiers.philips-ac0920.priceRupees` | 9000 | ₹ | TODO | provisional |
-| `purifiers.philips-ac1711.cadr` | 300 | m³/h | TODO | provisional |
-| `purifiers.philips-ac1711.watts` | 25 | W | TODO | provisional |
+| `purifiers.philips-ac1711.cadr` | 300 | m³/h | https://www.philips.co.in/c-p/AC1711_61/1000-series-air-purifier-for-medium-rooms | verified 2026-11-24 |
+| `purifiers.philips-ac1711.watts` | 27 | W | https://www.philips.co.in/c-p/AC1711_61/1000-series-air-purifier-for-medium-rooms | verified 2026-11-24 |
 | `purifiers.philips-ac1711.filterRupees` | 2500 | ₹ | TODO | provisional |
 | `purifiers.philips-ac1711.filterLifeMonths` | 12 | months | TODO | provisional |
 | `purifiers.philips-ac1711.priceRupees` | 11000 | ₹ | TODO | provisional |

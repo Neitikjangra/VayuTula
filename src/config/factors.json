@@ -181,10 +181,10 @@
   },
   "co2": {
     "lpgKgPerKg": {
-      "value": 2.98,
+      "value": 2.985,
       "unit": "kg CO₂/kg LPG",
-      "source": "TODO",
-      "verifiedOn": null
+      "source": "https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/2_Volume2/V2_1_Ch1_Introduction.pdf",
+      "verifiedOn": "2026-11-24"
     },
     "pngKgPerM3": {
       "value": 1.9,
@@ -199,10 +199,10 @@
       "verifiedOn": null
     },
     "gridKgPerKwh": {
-      "value": 0.71,
+      "value": 0.727,
       "unit": "kg CO₂/kWh",
-      "source": "TODO",
-      "verifiedOn": null
+      "source": "https://cea.nic.in/api/cdm-report-version/view-pdf/en/76",
+      "verifiedOn": "2026-11-24"
     }
   },
   "pm": {
