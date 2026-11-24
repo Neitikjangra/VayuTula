@@ -56,6 +56,26 @@ describe('generateJson()', () => {
     await expect(generateJson(request)).rejects.toMatchObject({ kind: 'unavailable' });
   });
 
+  it('asks for low thinking (MINIMAL is rejected by gemini-3.8-flash, found live in R4)', async () => {
+    generateContent.mockResolvedValue({ text: '{}' });
+    await generateJson(request);
+    expect(generateContent.mock.calls[0]![0].config.thinkingConfig).toEqual({
+      thinkingLevel: 'LOW',
+    });
+  });
+
+  it('retries the same model without a thinking setting if the model rejects it', async () => {
+    const rejected = new ApiError({
+      message: 'Thinking level LOW is not supported for this model.',
+      status: 400,
+    });
+    generateContent.mockRejectedValueOnce(rejected).mockResolvedValueOnce({ text: '{"ok":1}' });
+    await expect(generateJson(request)).resolves.toEqual({ ok: 1 });
+    const retry = generateContent.mock.calls[1]![0];
+    expect(retry.model).toBe('main-model');
+    expect(retry.config.thinkingConfig).toBeUndefined();
+  });
+
   it('does not try another model on other errors (e.g. a bad request)', async () => {
     generateContent.mockRejectedValue(apiError(400));
     await expect(generateJson(request)).rejects.toMatchObject({ kind: 'upstream' });

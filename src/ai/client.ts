@@ -13,7 +13,8 @@ export const AI_TEMPERATURE = 0.2;
 /** HTTP statuses that mean "try the other model": quota, overload, model not found. */
 const TRY_NEXT_MODEL = new Set([404, 429, 503]);
 
-export type AiErrorKind = 'no_key' | 'timeout' | 'unavailable' | 'upstream' | 'empty' | 'parse';
+export type AiErrorKind =
+  'no_key' | 'timeout' | 'unavailable' | 'thinking_unsupported' | 'upstream' | 'empty' | 'parse';
 
 /** Typed AI failure. Never carries the key, the prompt or the user's text. */
 export class AiError extends Error {
@@ -53,7 +54,21 @@ export function modelsToTry(): string[] {
   return [...new Set([main, fallback])];
 }
 
-async function callModel(model: string, request: JsonRequest): Promise<string | undefined> {
+/** Maps SDK failures to typed errors; a rejected thinking setting is reported separately. */
+function toAiError(error: unknown, signal: AbortSignal): AiError {
+  if (error instanceof AiError) return error;
+  if (signal.aborted) return new AiError('timeout');
+  if (!(error instanceof ApiError)) return new AiError('upstream');
+  if (error.status === 400 && /thinking/i.test(error.message))
+    return new AiError('thinking_unsupported');
+  return new AiError(TRY_NEXT_MODEL.has(error.status) ? 'unavailable' : 'upstream');
+}
+
+async function callModel(
+  model: string,
+  request: JsonRequest,
+  thinking: boolean,
+): Promise<string | undefined> {
   const signal = AbortSignal.timeout(AI_TIMEOUT_MS);
   try {
     const response = await getClient().models.generateContent({
@@ -65,16 +80,24 @@ async function callModel(model: string, request: JsonRequest): Promise<string | 
         responseJsonSchema: request.schema,
         temperature: AI_TEMPERATURE,
         maxOutputTokens: request.maxOutputTokens,
-        thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
+        ...(thinking ? { thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } } : {}),
         abortSignal: signal,
       },
     });
     return response.text;
   } catch (error) {
-    if (error instanceof AiError) throw error;
-    if (signal.aborted) throw new AiError('timeout');
-    const unavailable = error instanceof ApiError && TRY_NEXT_MODEL.has(error.status);
-    throw new AiError(unavailable ? 'unavailable' : 'upstream');
+    throw toAiError(error, signal);
+  }
+}
+
+/** One model: low thinking first; if the model rejects that setting, once more without it. */
+async function askModel(model: string, request: JsonRequest): Promise<string | undefined> {
+  try {
+    return await callModel(model, request, true);
+  } catch (error) {
+    if (error instanceof AiError && error.kind === 'thinking_unsupported')
+      return callModel(model, request, false);
+    throw error;
   }
 }
 
@@ -83,7 +106,7 @@ async function firstAnswer(request: JsonRequest): Promise<string | undefined> {
   let last: AiError = new AiError('unavailable');
   for (const model of modelsToTry()) {
     try {
-      return await callModel(model, request);
+      return await askModel(model, request);
     } catch (error) {
       if (!(error instanceof AiError) || error.kind !== 'unavailable') throw error;
       last = error;
