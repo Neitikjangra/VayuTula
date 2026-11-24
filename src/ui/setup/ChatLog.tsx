@@ -1,10 +1,12 @@
 'use client';
 
-import { t, type Lang } from '@/i18n';
+import { format, t, type Lang } from '@/i18n';
 import type { ChatLine } from './useIntake';
 
 function assistantText(lang: Lang, line: Extract<ChatLine, { role: 'assistant' }>): string {
   if (line.text) return line.text;
+  if (line.missing === 1) return t(lang, 'intake.ask.membersMoreOne');
+  if (line.missing) return format(lang, 'intake.ask.membersMore', { count: line.missing });
   return line.field === 'done' ? t(lang, 'intake.done') : t(lang, `intake.ask.${line.field}`);
 }
 

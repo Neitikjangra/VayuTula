@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fieldsIn, missingFields } from '@/domain';
+import { fieldsIn, membersStillToDescribe, missingFields } from '@/domain';
 
 describe('fieldsIn()', () => {
   it('needs a place to sleep and a living room or kitchen before rooms count as answered', () => {
@@ -35,6 +35,30 @@ describe('fieldsIn()', () => {
       ],
     };
     expect(fieldsIn(facts)).toEqual(['purifier', 'windows']);
+  });
+});
+
+describe('fieldsIn() with a stated household size', () => {
+  const mother = { label: 'Mother', ageGroup: 'elder' as const };
+
+  it('keeps asking about people until everyone stated is described (found live)', () => {
+    expect(fieldsIn({ householdSize: 4, members: [mother] })).not.toContain('members');
+    expect(fieldsIn({ householdSize: 1, members: [mother] })).toContain('members');
+  });
+
+  it('counts members as answered when no size was stated', () => {
+    expect(fieldsIn({ members: [mother] })).toContain('members');
+  });
+
+  it('does not count a bare size as the members answer', () => {
+    expect(fieldsIn({ householdSize: 4 })).not.toContain('members');
+  });
+
+  it('reports how many people are still to be described', () => {
+    expect(membersStillToDescribe({ householdSize: 4, members: [mother] })).toBe(3);
+    expect(membersStillToDescribe({ householdSize: 4 })).toBe(4);
+    expect(membersStillToDescribe({ members: [mother] })).toBe(0);
+    expect(membersStillToDescribe({ householdSize: 1, members: [mother, mother] })).toBe(0);
   });
 });
 

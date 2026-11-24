@@ -1,6 +1,7 @@
 import {
   MAX_INTAKE_QUESTIONS,
   fieldsIn,
+  membersStillToDescribe,
   missingFields,
   type IntakeFacts,
   type IntakeRequest,
@@ -30,9 +31,13 @@ function replyLang(req: IntakeRequest): 'en' | 'hi' {
 
 /** Chooses the next topic in code: never one this reply answered, never beyond 6 questions. */
 function finalize(out: IntakeModelOutput, req: IntakeRequest, lang: 'en' | 'hi'): IntakeReply {
-  const remaining = missingFields([...req.answered, ...fieldsIn(out.profileDelta)]);
+  // Lists in a reply are complete, so a shallow merge shows what is known after this turn.
+  const known = { ...req.facts, ...out.profileDelta };
+  const remaining = missingFields([...req.answered, ...fieldsIn(known)]);
   let nextField: NextField = remaining[0] ?? 'done';
   if (out.nextField !== 'done' && remaining.includes(out.nextField)) nextField = out.nextField;
+  // "We are four" but fewer people described: finish the family before moving on.
+  if (remaining.includes('members') && membersStillToDescribe(known) > 0) nextField = 'members';
   if (req.asked >= MAX_INTAKE_QUESTIONS) nextField = 'done';
   const question = nextField !== 'done' && nextField === out.nextField ? out.question : null;
   return { profileDelta: out.profileDelta, nextField, question, lang };

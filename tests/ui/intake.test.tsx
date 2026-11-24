@@ -123,11 +123,60 @@ describe('chat setup (FR-1)', () => {
     expect(screen.getByLabelText('Your message')).toBeTruthy();
   });
 
-  it('falls back to the form, keeping what was already understood, when the AI fails', async () => {
-    replies = [turn1, { status: 503 }];
+  it('keeps the chat after one failed reply and resends the message on "Try again"', async () => {
+    replies = [{ status: 503 }, turn1];
+    render(<SetupScreen />);
+    await say('We are two, me and my son');
+    expect(screen.getByText(/AI helper didn't answer that time/)).toBeTruthy();
+    expect(screen.getByLabelText('Your message')).toBeTruthy();
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    });
+    expect(sent.map((r) => r.message)).toEqual([
+      'We are two, me and my son',
+      'We are two, me and my son',
+    ]);
+    expect(screen.queryByText(/AI helper didn't answer that time/)).toBeNull();
+    expect(screen.getByText('What do you cook on, and how many meals a day?')).toBeTruthy();
+  });
+
+  it('asks about the rest of the family when fewer people are described than stated', async () => {
+    replies = [
+      {
+        profileDelta: { householdSize: 4, members: [{ label: 'Mother', ageGroup: 'elder' }] },
+        nextField: 'members',
+        question: null,
+        lang: 'en',
+      },
+    ];
+    render(<SetupScreen />);
+    await say('We are four, my mother coughs at night');
+    expect(screen.getByText(/^You mentioned 3 more people. Who are they?/)).toBeTruthy();
+  });
+
+  it('uses the singular when one more person is to be described', async () => {
+    replies = [
+      {
+        profileDelta: { householdSize: 2, members: [{ label: 'Mother', ageGroup: 'elder' }] },
+        nextField: 'members',
+        question: null,
+        lang: 'en',
+      },
+    ];
+    render(<SetupScreen />);
+    await say('We are two, my mother and me');
+    expect(screen.getByText(/^You mentioned one more person. Who is it?/)).toBeTruthy();
+  });
+
+  it('falls back to the form, keeping what was already understood, after two failed replies', async () => {
+    replies = [turn1, { status: 503 }, { status: 503 }];
     render(<SetupScreen />);
     await say('first');
     await say('second');
+    expect(screen.getByLabelText('Your message')).toBeTruthy();
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    });
     expect(screen.getByText(/AI helper isn't available/).getAttribute('role')).toBe('status');
     const names = screen
       .getAllByLabelText<HTMLInputElement>('Name or nickname')

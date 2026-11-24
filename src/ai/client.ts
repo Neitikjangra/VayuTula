@@ -10,11 +10,21 @@ export const AI_TIMEOUT_MS = 8000;
 /** Low temperature for repeatable extraction (PRD 6: ≤ 0.3). */
 export const AI_TEMPERATURE = 0.2;
 
-/** HTTP statuses that mean "try the other model": quota, overload, model not found. */
-const TRY_NEXT_MODEL = new Set([404, 429, 503]);
+/** HTTP statuses that mean "try the other model": quota or model not found. */
+const TRY_NEXT_MODEL = new Set([404, 429]);
+/** "High demand": usually gone a moment later, so the same model is asked once more. */
+const OVERLOADED = 503;
+export const OVERLOAD_RETRY_MS = 600;
 
 export type AiErrorKind =
-  'no_key' | 'timeout' | 'unavailable' | 'thinking_unsupported' | 'upstream' | 'empty' | 'parse';
+  | 'no_key'
+  | 'timeout'
+  | 'unavailable'
+  | 'overloaded'
+  | 'thinking_unsupported'
+  | 'upstream'
+  | 'empty'
+  | 'parse';
 
 /** Typed AI failure. Never carries the key, the prompt or the user's text. */
 export class AiError extends Error {
@@ -29,7 +39,10 @@ export class AiError extends Error {
 
 /** True when the AI cannot answer now (no key, over quota, overloaded, slow): retrying won't help. */
 export function isUnavailable(error: unknown): boolean {
-  return error instanceof AiError && ['no_key', 'unavailable', 'timeout'].includes(error.kind);
+  return (
+    error instanceof AiError &&
+    ['no_key', 'unavailable', 'overloaded', 'timeout'].includes(error.kind)
+  );
 }
 
 export interface JsonRequest {
@@ -59,18 +72,28 @@ export function modelsToTry(): string[] {
   return [...new Set([main, fallback])];
 }
 
-/** A model that was over quota, overloaded or too slow is skipped for this long. */
-export const MODEL_COOL_DOWN_MS = 60_000;
+/** How long a failing model is skipped (per server instance): quota lasts, overload passes. */
+export const COOL_DOWN_MS: Record<'unavailable' | 'overloaded' | 'timeout', number> = {
+  unavailable: 5 * 60_000,
+  timeout: 60_000,
+  overloaded: 15_000,
+};
 const coolingUntil = new Map<string, number>();
 
-/** Models worth calling now, in preference order (per server instance). */
-function healthyModels(): string[] {
-  const now = Date.now();
-  return modelsToTry().filter((model) => (coolingUntil.get(model) ?? 0) <= now);
+/**
+ * Models worth calling now, in preference order. When every model is cooling down, the one
+ * that recovers first is still tried: one blip must never block every request for minutes.
+ */
+export function healthyModels(now: number = Date.now()): string[] {
+  const models = modelsToTry();
+  const healthy = models.filter((model) => (coolingUntil.get(model) ?? 0) <= now);
+  if (healthy.length > 0) return healthy;
+  const soonest = [...models].sort((a, b) => coolingUntil.get(a)! - coolingUntil.get(b)!)[0];
+  return soonest ? [soonest] : [];
 }
 
-function coolDown(model: string): void {
-  coolingUntil.set(model, Date.now() + MODEL_COOL_DOWN_MS);
+function coolDown(model: string, kind: keyof typeof COOL_DOWN_MS): void {
+  coolingUntil.set(model, Date.now() + COOL_DOWN_MS[kind]);
 }
 
 /** Test helper: forget which models were cooling down. */
@@ -85,6 +108,7 @@ function toAiError(error: unknown, signal: AbortSignal): AiError {
   if (!(error instanceof ApiError)) return new AiError('upstream');
   if (error.status === 400 && /thinking/i.test(error.message))
     return new AiError('thinking_unsupported');
+  if (error.status === OVERLOADED) return new AiError('overloaded');
   return new AiError(TRY_NEXT_MODEL.has(error.status) ? 'unavailable' : 'upstream');
 }
 
@@ -125,21 +149,31 @@ async function askModel(model: string, request: JsonRequest): Promise<string | u
   }
 }
 
-/** Raw text from the first model that answers; quota or overload moves on to the next model. */
+const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** One model; a "high demand" reply is retried once after a short pause. */
+async function askWithRetry(model: string, request: JsonRequest): Promise<string | undefined> {
+  try {
+    return await askModel(model, request);
+  } catch (error) {
+    if (!(error instanceof AiError && error.kind === 'overloaded')) throw error;
+    await pause(OVERLOAD_RETRY_MS);
+    return askModel(model, request);
+  }
+}
+
+/** Raw text from the first model that answers; quota, overload or slowness moves on. */
 async function firstAnswer(request: JsonRequest): Promise<string | undefined> {
   if (!process.env.GEMINI_API_KEY) throw new AiError('no_key');
-  let last: AiError = new AiError('unavailable');
   for (const model of healthyModels()) {
     try {
-      return await askModel(model, request);
+      return await askWithRetry(model, request);
     } catch (error) {
-      const busy = error instanceof AiError && ['unavailable', 'timeout'].includes(error.kind);
-      if (!busy) throw error;
-      coolDown(model);
-      last = new AiError('unavailable');
+      if (!(error instanceof AiError) || !(error.kind in COOL_DOWN_MS)) throw error;
+      coolDown(model, error.kind as keyof typeof COOL_DOWN_MS);
     }
   }
-  throw last;
+  throw new AiError('unavailable');
 }
 
 /** Server-only Gemini call: JSON-schema output, temperature 0.2, token cap, 8 s timeout per model. */

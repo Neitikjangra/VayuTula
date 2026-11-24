@@ -15,7 +15,8 @@ const { ApiError } = await import('@google/genai');
 const {
   AiError,
   DEFAULT_FALLBACK_MODEL,
-  MODEL_COOL_DOWN_MS,
+  COOL_DOWN_MS,
+  OVERLOAD_RETRY_MS,
   generateJson,
   modelsToTry,
   resetModelHealth,
@@ -54,12 +55,28 @@ describe('generateJson()', () => {
     expect(call.config.abortSignal).toBeInstanceOf(AbortSignal);
   });
 
-  it.each([429, 503, 404])('moves to the fallback model on HTTP %i', async (status) => {
+  it.each([429, 404])('moves to the fallback model on HTTP %i', async (status) => {
     generateContent
       .mockRejectedValueOnce(apiError(status))
       .mockResolvedValueOnce({ text: '{"a":1}' });
     await expect(generateJson(request)).resolves.toEqual({ a: 1 });
     expect(generateContent.mock.calls[1]![0].model).toBe(DEFAULT_FALLBACK_MODEL);
+  });
+
+  it('asks the same model once more after a "high demand" 503 (found live: the next call works)', async () => {
+    generateContent.mockRejectedValueOnce(apiError(503)).mockResolvedValueOnce({ text: '{"a":1}' });
+    await expect(generateJson(request)).resolves.toEqual({ a: 1 });
+    expect(generateContent.mock.calls.map((c) => c[0].model)).toEqual(['main-model', 'main-model']);
+    expect(OVERLOAD_RETRY_MS).toBeLessThanOrEqual(1000);
+  });
+
+  it('moves to the fallback model when the 503 persists', async () => {
+    generateContent
+      .mockRejectedValueOnce(apiError(503))
+      .mockRejectedValueOnce(apiError(503))
+      .mockResolvedValueOnce({ text: '{"a":1}' });
+    await expect(generateJson(request)).resolves.toEqual({ a: 1 });
+    expect(generateContent.mock.calls[2]![0].model).toBe(DEFAULT_FALLBACK_MODEL);
   });
 
   it('reports "unavailable" when every model is over quota', async () => {
@@ -130,19 +147,24 @@ describe('model health (found live: every call waited on an over-quota model fir
 
   it('tries the main model again once the cool-down has passed', async () => {
     vi.useFakeTimers({ toFake: ['Date'] });
-    generateContent.mockRejectedValueOnce(apiError(503)).mockResolvedValue({ text: '{}' });
+    generateContent.mockRejectedValueOnce(apiError(429)).mockResolvedValue({ text: '{}' });
     await generateJson(request);
-    vi.setSystemTime(Date.now() + MODEL_COOL_DOWN_MS + 1);
+    vi.setSystemTime(Date.now() + COOL_DOWN_MS.unavailable + 1);
     await generateJson(request);
     expect(generateContent.mock.calls.at(-1)![0].model).toBe('main-model');
   });
 
-  it('fails fast, without a call, while every model is cooling down', async () => {
-    generateContent.mockRejectedValue(apiError(429));
+  it('still tries the model that recovers first while every model is cooling down (found live)', async () => {
+    generateContent.mockRejectedValueOnce(apiError(429)).mockRejectedValueOnce(apiError(429));
     await expect(generateJson(request)).rejects.toMatchObject({ kind: 'unavailable' });
     generateContent.mockClear();
-    await expect(generateJson(request)).rejects.toMatchObject({ kind: 'unavailable' });
-    expect(generateContent).not.toHaveBeenCalled();
+    generateContent.mockResolvedValueOnce({ text: '{"back":true}' });
+    await expect(generateJson(request)).resolves.toEqual({ back: true });
+    expect(generateContent).toHaveBeenCalledTimes(1);
+  });
+
+  it('cools an overloaded model down for less time than an over-quota one', () => {
+    expect(COOL_DOWN_MS.overloaded).toBeLessThan(COOL_DOWN_MS.unavailable);
   });
 
   it('does not cool down a model for other errors', async () => {

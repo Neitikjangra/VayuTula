@@ -342,5 +342,9 @@
   "status.notFoundBody": "This page does not exist. Your home and plan are safe on this device.",
   "status.errorHeading": "Something went wrong",
   "status.errorBody": "This page could not load. Your home and plan are still saved on this device. Please try again.",
-  "status.retry": "Try again"
+  "status.retry": "Try again",
+  "intake.ask.membersMore": "You mentioned {count} more people. Who are they? Please say if each is a child, an adult or an older person, and if anyone has asthma.",
+  "intake.failed": "The AI helper didn't answer that time. Your message is kept: try again, or tap \"Use the form instead\".",
+  "intake.retry": "Try again",
+  "intake.ask.membersMoreOne": "You mentioned one more person. Who is it? Please say if they are a child, an adult or an older person, and if they have asthma."
 }

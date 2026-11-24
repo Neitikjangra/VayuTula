@@ -3,7 +3,10 @@ import { IntakeResponseSchema, type IntakeRequest, type IntakeResponse } from '@
 export type IntakeOutcome =
   { kind: 'ok'; value: IntakeResponse } | { kind: 'rateLimited' } | { kind: 'failed' };
 
-/** POST /api/intake. Any failure other than the rate limit means "fall back to the form". */
+/** Longer than the server's two model attempts, so a slow reply still arrives. */
+export const INTAKE_CLIENT_TIMEOUT_MS = 25_000;
+
+/** POST /api/intake. Any failure other than the rate limit counts as "the AI did not answer". */
 export async function postIntake(body: IntakeRequest): Promise<IntakeOutcome> {
   let response: Response;
   try {
@@ -11,6 +14,7 @@ export async function postIntake(body: IntakeRequest): Promise<IntakeOutcome> {
       method: 'POST',
       headers: { 'content-type': 'application/json', accept: 'application/json' },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(INTAKE_CLIENT_TIMEOUT_MS),
     });
   } catch {
     return { kind: 'failed' };

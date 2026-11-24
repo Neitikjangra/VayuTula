@@ -46,6 +46,8 @@ const RoomFactSchema = z.object({
 
 /** Facts extracted from the user's words. Lists, when present, are complete lists. */
 export const IntakeFactsSchema = z.object({
+  /** How many people live there, when the user says so ("we are four"). */
+  householdSize: z.optional(Int(1, 12)),
   members: z.optional(z.array(MemberFactSchema).check(z.maxLength(12))),
   rooms: z.optional(z.array(RoomFactSchema).check(z.maxLength(8))),
   cooking: z.optional(
@@ -114,11 +116,16 @@ function roomsComplete(rooms: RoomFact[]): boolean {
   return sleep && day;
 }
 
+/** People the user said live there but has not described yet (0 when no size was stated). */
+export function membersStillToDescribe(facts: IntakeFacts): number {
+  return Math.max(0, (facts.householdSize ?? 0) - (facts.members?.length ?? 0));
+}
+
 /** Topics a set of facts covers. */
 export function fieldsIn(facts: IntakeFacts): IntakeField[] {
   const rooms = facts.rooms ?? [];
   const covered: Record<IntakeField, boolean> = {
-    members: facts.members !== undefined,
+    members: facts.members !== undefined && membersStillToDescribe(facts) === 0,
     rooms: roomsComplete(rooms),
     purifier: rooms.some((r) => r.hasPurifier !== undefined || r.purifierModel !== undefined),
     windows: rooms.some((r) => r.windowType !== undefined),

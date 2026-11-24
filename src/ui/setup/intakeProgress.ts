@@ -25,14 +25,11 @@ export const INITIAL_PROGRESS: IntakeProgress = {
  * its question, even with "don't know", so the same question is never asked twice.
  */
 export function nextProgress(p: IntakeProgress, reply: IntakeResponse): IntakeProgress {
-  const covered = [
-    ...p.answered,
-    ...fieldsIn(reply.profileDelta),
-    ...(p.pending ? [p.pending] : []),
-  ];
+  const facts = mergeFacts(p.facts, reply.profileDelta);
+  const covered = [...p.answered, ...fieldsIn(facts), ...(p.pending ? [p.pending] : [])];
   const pending = reply.nextField === 'done' ? null : reply.nextField;
   return {
-    facts: mergeFacts(p.facts, reply.profileDelta),
+    facts,
     answered: [...new Set(covered)],
     asked: p.asked + 1,
     pending,

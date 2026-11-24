@@ -170,6 +170,40 @@ describe('runIntake() with a mocked model (FR-1)', () => {
     expect(result.ok && result.value.nextField).toBe('purifier');
   });
 
+  it('asks about the rest of the family when fewer people are described than stated (found live)', async () => {
+    const { generate } = model({
+      profileDelta: {
+        householdSize: 4,
+        members: [{ label: 'Mother', ageGroup: 'elder', sensitive: true }],
+      },
+      nextField: 'rooms',
+      question: 'Can you tell me about the rooms in your home?',
+      lang: 'en',
+    });
+    const result = await runIntake(
+      request({ message: 'We are four in a 2BHK, my mother coughs at night' }),
+      generate,
+    );
+    expect(result.ok && result.value.nextField).toBe('members');
+    expect(result.ok && result.value.question).toBeNull();
+    expect(result.ok && result.value.profileDelta.householdSize).toBe(4);
+  });
+
+  it('uses a size stated in an earlier turn', async () => {
+    const { generate } = model({
+      profileDelta: { members: [{ label: 'Me', ageGroup: 'adult' }] },
+      nextField: 'rooms',
+      question: 'Which rooms do you have?',
+      lang: 'en',
+    });
+    const result = await runIntake(request({ facts: { householdSize: 3 } }), generate);
+    expect(result.ok && result.value.nextField).toBe('members');
+  });
+
+  it('asks the model to record the household size', () => {
+    expect(INTAKE_SYSTEM).toContain('householdSize');
+  });
+
   it('stops after 6 questions', async () => {
     const { generate } = model(englishReply);
     const result = await runIntake(request({ asked: 6 }), generate);

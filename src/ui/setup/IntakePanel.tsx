@@ -52,6 +52,54 @@ function ChatInput({ lang, busy, onSend }: InputProps) {
   );
 }
 
+/** One reply failed: keep the conversation and offer to resend (the form stays one tap away). */
+function RetryNotice({ lang, onRetry }: { lang: Lang; onRetry: () => void }) {
+  return (
+    <div
+      role="status"
+      className="flex flex-col gap-2 rounded-lg border border-slate-500 bg-slate-50 p-3"
+    >
+      <p className="text-base text-slate-900">{t(lang, 'intake.failed')}</p>
+      <button
+        type="button"
+        onClick={onRetry}
+        className="min-h-11 self-start rounded-lg bg-sky-900 px-4 py-2 text-base font-medium text-white focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-800"
+      >
+        {t(lang, 'intake.retry')}
+      </button>
+    </div>
+  );
+}
+
+/** The see-a-doctor statement (when symptoms are mentioned) and the rate-limit note. */
+function Notices({
+  lang,
+  symptom,
+  rateLimited,
+}: {
+  lang: Lang;
+  symptom: boolean;
+  rateLimited: boolean;
+}) {
+  return (
+    <>
+      {symptom && CONSULT && (
+        <p
+          role="alert"
+          className="rounded-lg border border-amber-700 bg-amber-50 p-3 text-base text-amber-950"
+        >
+          {lang === 'hi' ? CONSULT.hi : CONSULT.en}
+        </p>
+      )}
+      {rateLimited && (
+        <p role="status" className="text-base text-slate-800">
+          {t(lang, 'intake.rateLimited')}
+        </p>
+      )}
+    </>
+  );
+}
+
 interface Props {
   lang: Lang;
   draft: Draft;
@@ -69,18 +117,9 @@ export function IntakePanel({ lang, draft, invalid, onChange, onSave, onFallback
     <div className="flex flex-col gap-4">
       <FieldGroup legend={t(lang, 'intake.heading')}>
         <ChatLog lang={lang} lines={intake.lines} />
-        {intake.symptom && CONSULT && (
-          <p
-            role="alert"
-            className="rounded-lg border border-amber-700 bg-amber-50 p-3 text-base text-amber-950"
-          >
-            {lang === 'hi' ? CONSULT.hi : CONSULT.en}
-          </p>
-        )}
-        {intake.rateLimited && (
-          <p role="status" className="text-base text-slate-800">
-            {t(lang, 'intake.rateLimited')}
-          </p>
+        <Notices lang={lang} symptom={intake.symptom} rateLimited={intake.rateLimited} />
+        {intake.failed && !intake.busy && (
+          <RetryNotice lang={lang} onRetry={() => void intake.retry(draft)} />
         )}
         {!intake.progress.done && (
           <ChatInput
