@@ -48,7 +48,7 @@ Indoor sources (`engine/sources.ts`): cooking goes to the kitchen (a share leaks
 
 1. Keep actions whose `appliesWhen` holds for this home and whose one-off price fits the budget (₹0 → free only; ₹2,000; ₹15,000).
 2. Drop actions with no visible benefit on any pan.
-3. Score = weights × each pan normalised by the largest candidate − 0.1 × effort. Breathe-in weight doubles if anyone is a child, an elder or sensitive (`config/ranking.json`, provisional).
+3. Score = Σ weight × (pan ÷ its reference amount) − 0.1 × effort. References: 250 µg·h/m³ breathed in over 24 h, 50 g PM2.5 and 50 kg CO₂ a month, ₹500 a month each count as one point. Breathe-in weight doubles if anyone is a child, an elder or sensitive. All in `config/ranking.json`, provisional. Fixed references replaced "divide by the largest candidate" in R2, which let a ₹88/month running cost cancel a 500 µg·h/m³ health gain.
 4. **Free-first, enforced in code:** sort by cost tier, then score. A property test checks 1,000 random homes: no paid action ever comes before an applicable free one.
 5. Actions with identical effects in this home are shown once.
 
@@ -144,6 +144,10 @@ Every config value with its unit, source and status. All are **provisional** unt
 | `ranking.weights.emitOut` | 1 | weight | TODO | provisional |
 | `ranking.weights.rupees` | 1 | weight | TODO | provisional |
 | `ranking.weights.effortPenalty` | 0.1 | score per effort level | TODO | provisional |
+| `ranking.references.breatheIn` | 250 | µg·h/m³ over 24 h counted as 1 score point | TODO | provisional |
+| `ranking.references.pmG` | 50 | g PM2.5 a month counted as 1 score point | TODO | provisional |
+| `ranking.references.co2Kg` | 50 | kg CO₂ a month counted as 1 score point | TODO | provisional |
+| `ranking.references.rupees` | 500 | ₹ a month counted as 1 score point | TODO | provisional |
 | `health.whoAnnualPm25` | 5 | µg/m³ annual mean | TODO | provisional |
 | `health.who24hPm25` | 15 | µg/m³ 24-hour mean | TODO | provisional |
 | `purifiers.philips-ac1215.cadr` | 270 | m³/h | TODO | provisional |

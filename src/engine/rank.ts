@@ -8,11 +8,20 @@ import { evaluateAction, evaluateScenario, totalInhaled } from './tula';
 
 export { isApplicable, withinBudget } from './applicability';
 
+/** Amount on each pan that counts as one score point (config/ranking.json references). */
+export interface ScoreReferences {
+  breatheIn: number;
+  pmG: number;
+  co2Kg: number;
+  rupees: number;
+}
+
 export interface ScoreWeights {
   breatheIn: number;
   emitOut: number;
   rupees: number;
   effortPenalty: number;
+  refs: ScoreReferences;
 }
 
 export interface RankedAction {
@@ -23,13 +32,19 @@ export interface RankedAction {
 
 /** PRD 4.4: breathe-in weight doubles if any member is a child, an elder or sensitive. */
 export function scoreWeights(profile: Profile, cfg: AppConfig): ScoreWeights {
-  const w = cfg.ranking.weights;
+  const { weights: w, references: r } = cfg.ranking;
   const vulnerable = profile.members.some((m) => m.ageGroup !== 'adult' || m.sensitive);
   return {
     breatheIn: vulnerable ? w.breatheInVulnerable.value : w.breatheIn.value,
     emitOut: w.emitOut.value,
     rupees: w.rupees.value,
     effortPenalty: w.effortPenalty.value,
+    refs: {
+      breatheIn: r.breatheIn.value,
+      pmG: r.pmG.value,
+      co2Kg: r.co2Kg.value,
+      rupees: r.rupees.value,
+    },
   };
 }
 
@@ -43,27 +58,25 @@ export function isUseful(tula: TulaScore): boolean {
   );
 }
 
-function ratio(value: number, max: number): number {
-  return max > 0 ? value / max : 0;
+function per(value: number, reference: number): number {
+  return reference > 0 ? value / reference : 0;
 }
 
-/** Score = Σ weight × pan normalised by the largest candidate − penalty × effort. */
+/**
+ * Score = Σ weight × (pan ÷ its fixed reference amount) − penalty × effort.
+ * Fixed references (not the largest candidate) keep a small cost from cancelling a big gain.
+ */
 export function scoreCandidates(
   candidates: { action: ActionDef; tula: TulaScore }[],
   w: ScoreWeights,
 ): RankedAction[] {
-  const maxOf = (pick: (t: TulaScore) => number) =>
-    Math.max(0, ...candidates.map((c) => Math.abs(pick(c.tula))));
-  const maxB = maxOf(totalInhaled);
-  const maxPm = maxOf((t) => t.pmEmittedAvoidedG);
-  const maxCo2 = maxOf((t) => t.co2AvoidedKg);
-  const maxR = maxOf((t) => t.rupeesPerMonth);
+  const { refs } = w;
   return candidates.map(({ action, tula }) => {
-    const emit = (ratio(tula.pmEmittedAvoidedG, maxPm) + ratio(tula.co2AvoidedKg, maxCo2)) / 2;
+    const emit = (per(tula.pmEmittedAvoidedG, refs.pmG) + per(tula.co2AvoidedKg, refs.co2Kg)) / 2;
     const score =
-      w.breatheIn * ratio(totalInhaled(tula), maxB) +
+      w.breatheIn * per(totalInhaled(tula), refs.breatheIn) +
       w.emitOut * emit +
-      w.rupees * ratio(tula.rupeesPerMonth, maxR) -
+      w.rupees * per(tula.rupeesPerMonth, refs.rupees) -
       w.effortPenalty * action.effort;
     return { action, tula, score };
   });

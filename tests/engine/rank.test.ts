@@ -1,6 +1,9 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
+import airQuality from '../fixtures/openMeteo/airQuality.noida.json';
 import { appConfig, configRegistry } from '@/config';
+import { fetchPm25Forecast } from '@/data/openMeteo';
+import { defaultDraft } from '@/ui/setup/draft';
 import {
   BUDGET_TIERS,
   COMMUTE_MODES,
@@ -11,8 +14,21 @@ import {
   type Profile,
   type ProfileInput,
 } from '@/domain';
-import { isApplicable, rankActions, scoreWeights, withinBudget } from '@/engine/rank';
-import { START_ISO, constantForecast, forecastOf, profileOf, twoBhk } from '../fixtures/engine';
+import {
+  isApplicable,
+  rankActions,
+  scoreCandidates,
+  scoreWeights,
+  withinBudget,
+} from '@/engine/rank';
+import {
+  START_ISO,
+  constantForecast,
+  forecastOf,
+  oneRoomProfile,
+  profileOf,
+  twoBhk,
+} from '../fixtures/engine';
 
 const forecast = constantForecast(150);
 
@@ -101,6 +117,45 @@ describe('ranking', () => {
     for (const { tula } of rankActions(twoBhk({ budgetTier: 15000 }), forecast, START_ISO)) {
       for (const key of tula.assumptions) expect(configRegistry.has(key), key).toBe(true);
     }
+  });
+
+  it('a big breathe-in gain is not cancelled by a small running cost (live bug, R2)', async () => {
+    // Exactly what was checked live: the default /setup home (one adult; bedroom, living
+    // room, kitchen; LPG twice a day) with a Philips purifier in the bedroom, budget ₹2,000,
+    // on the recorded Noida forecast at 12:46 IST. Running the purifier saves ~500 µg·h/m³,
+    // cooking with a lid ~21, yet the lid ranked first because the purifier's ₹88/month
+    // power cost became −1 after dividing by the largest ₹ among candidates.
+    const draft = defaultDraft('en', { kind: 'search', name: 'Noida', lat: 28.58, lon: 77.33 });
+    const home = profileOf({
+      ...draft,
+      budgetTier: 2000,
+      rooms: draft.rooms.map((r) =>
+        r.kind === 'bedroom' ? { ...r, purifierId: 'philips-ac1215' } : r,
+      ),
+    });
+    const noida = await fetchPm25Forecast(28.58, 77.33, {
+      fetchImpl: async () => Response.json(airQuality),
+    });
+    const ids = rankActions(home, noida, '2026-11-24T07:16:00.000Z').map((r) => r.action.id);
+    const purifier = ids.findIndex((id) => id.startsWith('run-purifier'));
+    expect(purifier).toBeGreaterThanOrEqual(0);
+    expect(purifier).toBeLessThan(ids.indexOf('cook-with-lid'));
+  });
+
+  it('scores each pan against a fixed reference amount, not the largest candidate', () => {
+    const w = scoreWeights(oneRoomProfile(), appConfig);
+    const tula = {
+      inhaledAvoided: { a: w.refs.breatheIn },
+      pmEmittedAvoidedG: w.refs.pmG,
+      co2AvoidedKg: w.refs.co2Kg,
+      rupeesPerMonth: w.refs.rupees,
+      confidence: 'high' as const,
+      assumptions: [],
+    };
+    const action = appConfig.actions.find((a) => a.effort === 1)!;
+    const [scored] = scoreCandidates([{ action, tula }], w);
+    // One reference unit on every pan: 1·wB + 1·wE + 1·wR − penalty × effort.
+    expect(scored!.score).toBeCloseTo(w.breatheIn + w.emitOut + w.rupees - w.effortPenalty, 9);
   });
 
   it('two homes with different budgets get different plans', () => {

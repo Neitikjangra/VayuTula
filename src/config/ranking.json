@@ -30,5 +30,31 @@
       "source": "TODO",
       "verifiedOn": null
     }
+  },
+  "references": {
+    "breatheIn": {
+      "value": 250,
+      "unit": "µg·h/m³ over 24 h counted as 1 score point",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "pmG": {
+      "value": 50,
+      "unit": "g PM2.5 a month counted as 1 score point",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "co2Kg": {
+      "value": 50,
+      "unit": "kg CO₂ a month counted as 1 score point",
+      "source": "TODO",
+      "verifiedOn": null
+    },
+    "rupees": {
+      "value": 500,
+      "unit": "₹ a month counted as 1 score point",
+      "source": "TODO",
+      "verifiedOn": null
+    }
   }
 }
