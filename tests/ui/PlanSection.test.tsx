@@ -83,6 +83,8 @@ describe("today's plan (FR-6)", () => {
   it('sends counts and numbers only: no names, no place', async () => {
     planReply = () => new Response(null, { status: 503 });
     await renderPlan();
+    // The request leaves after the profile hash is computed; slower machines (CI) need the wait.
+    await vi.waitFor(() => expect(sent).toHaveLength(1));
     const body = JSON.stringify(sent[0]);
     expect(sent[0]?.profileHash).toMatch(/^[a-f0-9]{16,64}$/);
     expect(body).not.toMatch(/Mum|Dad|Dadi|Kid|Noida|28\.58/);
