@@ -25,4 +25,6 @@ On 2026-11-24, values were marked verified only when the figure was read on the 
 These stay provisional:
 
 - Purifiers: Xiaomi (mi.com returned 403), Levoit and Blueair (rate-limited), Coway (Korean site, no product page found), Samsung (no product page), and Philips AC1215, AC0920 and AC2887 (not on the listing pages read).
-- The Delhi electricity tariff (DERC), bus and metro fares, indoor model factors and emission factors were not researched in this pass.
+- **Delhi electricity tariff (₹6.5/kWh):** DERC's latest orders on derc.gov.in (true-up of FY 2022-23 for BRPL) don't contain the slab table; they refer to a separate tariff schedule that isn't listed there. BSES's tariff page returned "not found", and TPDDL's site has no tariff link. Aggregator sites quote ₹3 / ₹4.5 / ₹6.5 for the 0–200 / 201–400 / 401–800 unit slabs, but they disagree on the years and surcharges, so the value stays provisional. A recent DISCOM bill would settle it.
+- **Philips AC1215:** philips.co.in now redirects its product page to the current range, so its specs can't be confirmed there.
+- Bus and metro fares, indoor model factors and emission factors were not researched in this pass.
